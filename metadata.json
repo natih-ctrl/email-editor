@@ -1,0 +1,5 @@
+{
+  "name": "Callout Automation Generator",
+  "description": "A robust editor for generating automated callout sections for emails and web pages, featuring real-time preview and code generation.",
+  "requestFramePermissions": []
+}

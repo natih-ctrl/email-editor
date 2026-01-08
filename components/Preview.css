@@ -1,0 +1,218 @@
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-white);
+  min-height: 600px;
+  position: relative;
+  width: 100%;
+}
+
+.preview-header {
+  padding: 2rem;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.preview-content {
+  padding: 1rem 1.5rem;
+}
+
+.section-item {
+  position: relative;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s;
+  cursor: text;
+  min-height: 40px;
+}
+
+.section-item:hover { background: rgba(249, 250, 251, 0.5); }
+.section-item--active {
+  box-shadow: 0 0 0 2px var(--primary-blue);
+  background: rgba(0, 102, 204, 0.03);
+}
+
+.section-item__actions {
+  position: absolute;
+  left: -2.75rem;
+  top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
+.action-btn--delete:hover { color: #ef4444; border-color: #ef4444; }
+
+.section-editor {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.type-h1 { font-size: 1.5rem; font-weight: 700; color: #111827; }
+.type-h2 { font-size: 1.125rem; font-weight: 700; color: #1f2937; }
+.type-p { font-size: 0.875rem; font-weight: 500; color: #4b5563; }
+.type-callout { font-size: 0.875rem; font-weight: 500; color: #374151; }
+
+.toolbar {
+  position: absolute;
+  top: -4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: 0.375rem 0.75rem;
+  box-shadow: var(--shadow-xl);
+  z-index: 100;
+}
+
+.toolbar__btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.toolbar__btn:hover { background: #f3f4f6; }
+.toolbar__btn--active { background: var(--primary-blue); color: white; }
+.toolbar__divider { width: 1px; height: 1.25rem; background: var(--border-light); margin: 0 0.25rem; }
+
+/* Existing Footer Styles Updated */
+.main-footer { 
+  background: #020621; 
+  color: white; 
+  text-align: center; 
+}
+
+.main-footer__container { 
+  padding: 32px 16px; 
+}
+
+.main-footer__help-text {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+
+.main-footer__help-text b {
+  display: block;
+}
+
+.footer-assets-grid {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.footer-pill-btn img {
+  display: block;
+}
+
+.footer-social-grid {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-bottom: 24px;
+}
+
+.footer-tax-info { 
+  color: #B8C4CB; 
+  font-size: 14px; 
+  max-width: 370px; 
+  margin: 0 auto 16px; 
+  line-height: 1.5; 
+}
+
+.footer-line-separator {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  width: 300px;
+  margin: 0 auto 12px;
+}
+
+.footer-copyright { 
+  color: #B0BDC5; 
+  font-size: 12px; 
+}
+
+.signature { padding: 2rem; }
+.disclaimer { 
+  padding: 1rem 0; 
+  font-size: 9px; 
+  color: #6b7280; 
+  text-align: justify; 
+  line-height: 1.2;
+}
+
+.disclaimer a {
+  color: var(--primary-blue);
+  text-decoration: underline;
+}
+
+.disclaimer-link-tool {
+  position: absolute;
+  top: -1.5rem;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 50;
+}
+
+.disclaimer-link-tool:hover {
+  background: #f8fafc;
+}
+
+.callout-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.callout-number { color: var(--primary-blue); font-weight: 700; }
+.callout-button { 
+  background: black; 
+  color: white; 
+  padding: 0.625rem 1.25rem; 
+  border-radius: 99px; 
+  font-size: 0.6875rem; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  border: none; 
+}
