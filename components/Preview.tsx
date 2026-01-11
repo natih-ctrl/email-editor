@@ -163,7 +163,6 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
     const url = prompt("Enter the URL for the selected text:");
     if (url) {
       document.execCommand('createLink', false, url);
-      // Trigger update manually since blur might not have happened yet
       if (disclaimerRef.current) {
         onConfigChange({ disclaimerText: disclaimerRef.current.innerHTML });
       }
@@ -196,13 +195,13 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
               ref={bestRef}
               contentEditable 
               onBlur={() => onConfigChange({ signatureBest: bestRef.current?.innerHTML || '' })}
-              style={{ margin: 0, fontWeight: 500, outline: 'none' }} 
+              style={{ margin: 0, fontWeight: 500, outline: 'none', fontSize: '14px' }} 
             />
             <p 
               ref={nameRef}
               contentEditable 
               onBlur={() => onConfigChange({ signatureName: nameRef.current?.innerHTML || '' })}
-              style={{ margin: 0, fontWeight: 700, outline: 'none' }} 
+              style={{ margin: 0, fontWeight: 700, outline: 'none', fontSize: '14px' }} 
             />
           </div>
         )}
@@ -222,7 +221,6 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
               contentEditable 
               onFocus={() => setIsDisclaimerFocused(true)}
               onBlur={() => {
-                // Use a small timeout to allow click events on the link tool to register first
                 setTimeout(() => setIsDisclaimerFocused(false), 200);
                 onConfigChange({ disclaimerText: disclaimerRef.current?.innerHTML || '' });
               }}
