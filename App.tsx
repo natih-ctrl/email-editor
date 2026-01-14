@@ -56,57 +56,156 @@ const App: React.FC = () => {
       const doc = parser.parseFromString(html, 'text/html');
       
       const sections: Section[] = [];
-      const cells = doc.querySelectorAll('td');
-      cells.forEach(td => {
+      let importedSigBest = DEFAULT_CONFIG.signatureBest;
+      let importedSigName = DEFAULT_CONFIG.signatureName;
+      let importedDisclaimer = DEFAULT_CONFIG.disclaimerText;
+      
+      let hasLogo = !!doc.querySelector('img.desktop-version-logo') || html.includes('gusalogo.png');
+      let hasSignature = false;
+      let hasDisclaimer = false;
+      let hasFooter = !!doc.querySelector('.v4-footer-table') || !!doc.querySelector('.trans-txt-d-bc') || html.includes('Need help with your order?');
+
+      const rows = Array.from(doc.querySelectorAll('tr'));
+
+      rows.forEach((tr, index) => {
+        const td = tr.querySelector('td') as HTMLElement | null;
+        if (!td) return;
+        
+        // Skip footer rows
+        if (tr.closest('.v4-footer-table') || tr.closest('.trans-txt-d-bc')) return;
+        
+        const style = td.getAttribute('style') || '';
+        const innerHTML = td.innerHTML.trim();
+
+        // 1. Skip layout spacer rows
+        const height = td.getAttribute('height');
+        if (height === '40' || height === '32' || height === '12' || height === '24') return;
+
+        // 2. Detect Signature Block
+        // We look for the characteristic signature padding or a TD with two P tags at the end of content
+        if (style.includes('padding: 16px 20px') || style.includes('padding: 40px 20px 24px 20px')) {
+          const ps = td.querySelectorAll('p');
+          if (ps.length >= 2) {
+            importedSigBest = ps[0].innerHTML.trim();
+            importedSigName = ps[1].innerHTML.trim();
+            hasSignature = true;
+            return;
+          }
+        }
+
+        // 3. Detect Disclaimer Block
+        // Characterized by 12px font size and justify alignment
+        if (style.includes('font-size: 12px') && (style.includes('text-align: justify') || style.includes('color: #3A4850'))) {
+          importedDisclaimer = innerHTML;
+          hasDisclaimer = true;
+          return;
+        }
+
+        // 4. Detect Divider Section
+        // Look for the specific divider div
+        const div = td.querySelector('div');
+        if (div) {
+          const divStyle = div.getAttribute('style') || '';
+          if (divStyle.includes('background-color: #DEDEDE') || divStyle.includes('rgb(222, 222, 222)')) {
+            // Check if it's just the disclaimer separator
+            const isDisclaimerSeparator = index + 1 < rows.length && 
+              (rows[index+1].querySelector('td')?.getAttribute('style')?.includes('font-size: 12px') || false);
+            
+            if (!isDisclaimerSeparator) {
+              sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'divider', text: '' });
+            }
+            return;
+          }
+        }
+
+        // 5. Detect Callout Section
+        const nestedTable = td.querySelector('table');
+        if (nestedTable) {
+          const borderCell = nestedTable.querySelector('td[width="4"]') as HTMLElement | null;
+          const bcStyle = borderCell?.getAttribute('style') || '';
+          const isBlue = bcStyle.includes('#2563EB') || bcStyle.includes('rgb(37, 99, 235)');
+          
+          if (isBlue) {
+            const contentContainer = nestedTable.querySelector('div');
+            const button = nestedTable.querySelector('a');
+            sections.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'callout',
+              text: contentContainer?.innerHTML.trim() || '',
+              showButton: !!button,
+              buttonText: button?.textContent?.trim() || 'Upload Now',
+              url: button?.getAttribute('href') || ''
+            });
+            return;
+          }
+        }
+
+        // 6. Detect Text Sections (H1, H2, P)
         const h1 = td.querySelector('h1');
         const h2 = td.querySelector('h2');
         const p = td.querySelector('p');
-        
-        if (h1) sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'h1', text: h1.innerHTML });
-        else if (h2) sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'h2', text: h2.innerHTML });
-        else if (p && !p.classList.contains('signature-text') && !p.closest('.template-footer')) {
-           sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'p', text: p.innerHTML });
+
+        if (h1) {
+          sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'h1', text: h1.innerHTML.trim() });
+        } else if (h2) {
+          sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'h2', text: h2.innerHTML.trim() });
+        } else if (p) {
+          // Verify it's not the signature (which we already handled)
+          if (!hasSignature || (p.innerHTML.trim() !== importedSigBest && p.innerHTML.trim() !== importedSigName)) {
+            sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'p', text: p.innerHTML.trim() });
+          }
         }
       });
 
-      if (sections.length > 0) {
+      if (sections.length > 0 || hasSignature || hasDisclaimer) {
         setConfig(prev => ({
           ...prev,
-          sections: sections
+          sections: sections.length > 0 ? sections : prev.sections,
+          signatureBest: importedSigBest,
+          signatureName: importedSigName,
+          disclaimerText: importedDisclaimer,
+          showLogo: hasLogo,
+          showSignature: hasSignature,
+          showDisclaimer: hasDisclaimer,
+          showFooter: hasFooter
         }));
-        toast.success('Imported sections from HTML');
+        toast.success(`Email imported successfully`);
       } else {
-        toast.error('Could not find compatible sections in HTML');
+        toast.error('Could not find compatible content in HTML');
       }
     } catch (e) {
+      console.error(e);
       toast.error('Failed to parse HTML');
     }
   };
 
   const generateHTML = () => {
     const sectionsHTML = config.sections.map((section) => {
+      const fontFamily = "font-family: Roboto, Helvetica, Arial, sans-serif;";
+      const rowPadding = "padding: 16px 20px;";
+      
       switch (section.type) {
         case 'h1':
-          return `<tr><td style="padding: 16px 40px;"><h1 style="font-size: 24px; font-weight: 700; line-height: 32px; color: #0F0F0F; margin: 0; font-family: Roboto, Helvetica, Arial, sans-serif;">${section.text || ''}</h1></td></tr>`;
+          return `<tr><td style="${rowPadding}"><h1 style="font-size: 24px; font-weight: 700; line-height: 32px; color: #020621; margin: 0; ${fontFamily}">${section.text || ''}</h1></td></tr>`;
         case 'h2':
-          return `<tr><td style="padding: 16px 40px;"><h2 style="font-size: 18px; font-weight: 700; line-height: 26px; color: #0F0F0F; margin: 0; font-family: Roboto, Helvetica, Arial, sans-serif;">${section.text || ''}</h2></td></tr>`;
+          return `<tr><td style="${rowPadding}"><h2 style="font-size: 18px; font-weight: 700; line-height: 26px; color: #020621; margin: 0; ${fontFamily}">${section.text || ''}</h2></td></tr>`;
         case 'p':
-          return `<tr><td style="padding: 16px 40px;"><p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #0F0F0F; margin: 0; font-family: Roboto, Helvetica, Arial, sans-serif;">${section.text || ''}</p></td></tr>`;
+          return `<tr><td style="${rowPadding}"><p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #020621; margin: 0; ${fontFamily}">${section.text || ''}</p></td></tr>`;
         case 'divider':
-          return `<tr><td style="padding: 24px 40px;"><div style="height: 1px; background-color: #DEDEDE;"></div></td></tr>`;
+          return `<tr><td style="padding: 0 20px;"><div style="height: 1px; background-color: #DEDEDE;"></div></td></tr>`;
         case 'callout':
           return `
-            <tr><td style="padding: 16px 40px;">
+            <tr><td style="${rowPadding}">
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; background-color: #ffffff; border-collapse: separate;">
                 <tr>
-                  <td width="4" style="background-color: #277BDA; border-radius: 4px 0 0 4px; font-size: 0; line-height: 0;">&nbsp;</td>
-                  <td style="padding: 16px; font-family: Roboto, Helvetica, Arial, sans-serif;">
-                    <div style="font-size: 16px; font-weight: 400; line-height: 24px; color: #0F0F0F;">
+                  <td width="4" style="background-color: #2563EB; border-radius: 4px 0 0 4px; font-size: 0; line-height: 0;">&nbsp;</td>
+                  <td style="padding: 16px; ${fontFamily}">
+                    <div style="font-size: 16px; font-weight: 400; line-height: 24px; color: #020621;">
                       ${section.text || ''}
                     </div>
                     ${section.showButton ? `
                     <div style="padding-top: 16px;">
-                      <a href="${section.url || '#'}" style="background-color: #0F0F0F; color: #ffffff; padding: 8px 24px; text-align: center; border-radius: 16px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">${section.buttonText || 'Upload Now'}</a>
+                      <a href="${section.url || '#'}" style="background-color: #020621; color: #ffffff; padding: 10px 24px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">${section.buttonText || 'Upload Now'}</a>
                     </div>` : ''}
                   </td>
                 </tr>
@@ -125,59 +224,29 @@ const App: React.FC = () => {
     <title>GlassesUSA.com</title>
     <style>
         @media only screen and (min-width: 420px) {
-            body {
-                font-family: Roboto !important;
-            }
-
-            .desktop-version-width {
-                width: 524px !important;
-            }
-
-            img.desktop-version-logo {
-                width: 159px !important;
-            }
-
-            td.desktop-version-width-height {
-                height: 38px !important;
-            }
-
-            td.trans-txt-d-b-top {
-                height: 16px;
-            }
-
-            .colored {
-                display: block !important;
-            }
-
-            .logomobile {
-                display: none !important;
-            }
-
-            span.trans-txt-d-normal {
-                font-size: 16px !important;
-            }
-
-            .trans-txt-d-inline {
-                display: inline !important;
-                font-size: 16px !important;
-            }
-
-            td.footer-width-txt {
-                width: 370px !important;
-            }
+            body { font-family: Roboto !important; }
+            .desktop-version-width { width: 524px !important; }
+            img.desktop-version-logo { width: 159px !important; }
+            td.desktop-version-width-height { height: 32px !important; }
+            td.trans-txt-d-b-top { height: 16px; }
+            .colored { display: block !important; }
+            .logomobile { display: none !important; }
+            span.trans-txt-d-normal { font-size: 16px !important; }
+            .trans-txt-d-inline { display: inline !important; font-size: 16px !important; }
+            td.footer-width-txt { width: 370px !important; }
         }
     </style>
 </head>
 <body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif;">
     <table class="desktop-version-width" width="335" border="0" cellpadding="0" cellspacing="0" align="center">
         <tbody>
-            <tr><td height="12"></td></tr>
+            <tr><td height="40"></td></tr>
             <tr>
                 <td>
-                    <img width="100" class="desktop-version-logo" style="max-width: 159px; width: 100px;" src="https://www.glassesusa.com/media/wysiwyg/lp20/gusa-logo-b.png" alt="glasses usa">
+                    <img width="100" class="desktop-version-logo" style="max-width: 159px; width: 100px;" src="https://www.glassesusa.com/media/wysiwyg/lp26/gusalogo.png" alt="glasses usa">
                 </td>
             </tr>
-            <tr><td class="desktop-version-width-height" height="24"></td></tr>
+            <tr><td class="desktop-version-width-height" height="32"></td></tr>
         </tbody>
     </table>
 
@@ -187,24 +256,26 @@ const App: React.FC = () => {
 
             ${config.showSignature ? `
             <tr>
-                <td style="padding: 40px 40px 24px 40px; font-family: Roboto, sans-serif;">
-                    <p style="margin: 0; font-size: 16px; color: #0F0F0F; font-weight: 400;">${config.signatureBest}</p>
-                    <p style="margin: 0; font-size: 16px; color: #0F0F0F; font-weight: 400;">${config.signatureName}</p>
+                <td style="padding: 16px 20px; font-family: Roboto, sans-serif;">
+                    <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureBest}</p>
+                    <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureName}</p>
                 </td>
             </tr>` : ''}
 
             ${config.showDisclaimer ? `
             <tr>
-                <td style="padding: 0 40px;">
+                <td style="padding: 0 20px;">
                     <div style="height: 1px; background-color: #DEDEDE;"></div>
                 </td>
             </tr>
             <tr>
-                <td style="padding: 24px 40px; font-size: 12px; color: #3A4850; line-height: 18px; text-align: justify; font-family: Roboto, sans-serif;">
+                <td style="padding: 16px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; text-align: justify; font-family: Roboto, sans-serif;">
                     ${config.disclaimerText}
                 </td>
             </tr>` : ''}
             
+            <tr><td height="40"></td></tr>
+
             ${config.showFooter ? `
             <tr>
                 <td>
@@ -253,15 +324,17 @@ const App: React.FC = () => {
 
                             <tr><td height="30"></td></tr>
                             <tr style="display: table; margin: auto;" align="center">
-                                <td><a href="https://www.facebook.com/GlassesUSA/"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/facebook.png" alt="facebook"></a></td>
+                                <td><a href="#"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/facebook.png" alt="facebook"></a></td>
                                 <td width="36"></td>
-                                <td><a href="https://www.instagram.com/glassesusa/"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/instagram.png" alt="instagram"></a></td>
+                                <td><a href="#"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/instagram.png" alt="instagram"></a></td>
                                 <td width="36"></td>
-                                <td><a href="https://www.tiktok.com/@glassesusa?"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/tiktok.png" alt="tiktok"></a></td>
+                                <td><a href="#"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/tiktok.png" alt="tiktok"></a></td>
                                 <td width="36"></td>
-                                <td><a href="https://www.youtube.com/user/GlassesUSA"><img style="vertical-align: top;" src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/youtube.png" alt="youtube"></a></td>
+                                <td><a href="#"><img style="vertical-align: top;" src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp26/x.png" alt="Twitter"></a></td>
                                 <td width="36"></td>
-                                <td><a href="https://www.pinterest.com/glassesusa/"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/pinterest.png" alt="printerest"></a></td>
+                                <td><a href="#"><img style="vertical-align: top;" src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/youtube.png" alt="youtube"></a></td>
+                                <td width="36"></td>
+                                <td><a href="#"><img src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/pinterest.png" alt="pinterest"></a></td>
                             </tr>
                             <tr><td height="38"></td></tr>
                             <tr>
@@ -275,7 +348,7 @@ const App: React.FC = () => {
                                     © 2006-2026 Glassesusa.com All Rights Reserved
                                 </td>
                             </tr>
-                            <tr><td height="24"></td></tr>
+                            <tr><td height="40"></td></tr>
                         </tbody>
                     </table>
                 </td>
@@ -294,7 +367,7 @@ const App: React.FC = () => {
     const blob = new Blob([generateHTML()], { type: 'text/html' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `callout-${config.storeView.toLowerCase()}.html`;
+    link.download = `callout-automation.html`;
     link.click();
   };
 

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Config, Section } from '../types';
-import { Mail, Download, CheckSquare, Square, FileUp } from 'lucide-react';
+import { Mail, Download, Check, FileUp } from 'lucide-react';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -36,12 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       className="sidebar__checkbox"
       onClick={() => onChange({ [field]: !config[field] })}
     >
-      <div className="sidebar__checkbox-box">
-        {config[field] ? (
-          <CheckSquare className="icon-md sidebar__checkbox-icon--checked" />
-        ) : (
-          <Square className="icon-md sidebar__checkbox-icon--unchecked" />
-        )}
+      <div className={`sidebar__checkbox-custom ${config[field] ? 'checked' : ''}`}>
+        {config[field] && <Check size={14} strokeWidth={3} className="sidebar__checkbox-tick" />}
       </div>
       <span className="sidebar__checkbox-label">{label}</span>
     </div>
@@ -57,21 +53,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="sidebar__content">
-        <div className="sidebar__section">
-          <label className="sidebar__section-title">Store view</label>
-          <div className="sidebar__input-group">
-            <select 
-              value={config.storeView}
-              onChange={(e) => onChange({ storeView: e.target.value })}
-              className="sidebar__select"
-            >
-              <option>GlassesUSA</option>
-              <option>Otticals</option>
-              <option>United Vision</option>
-            </select>
-          </div>
-        </div>
-
         <div className="sidebar__section">
           <span className="sidebar__section-title">Layout</span>
           <div className="sidebar__checkbox-list">
