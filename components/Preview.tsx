@@ -20,12 +20,10 @@ const Toolbar: React.FC<{
   onClose: () => void;
 }> = ({ section, onUpdate, onClose }) => {
   const changeType = (newType: Section['type'], showButton: boolean = false) => {
+    // We only update the type and button visibility to preserve existing text and links
     onUpdate({ 
       type: newType, 
-      showButton, 
-      text: '', 
-      buttonText: 'Upload Now',
-      url: ''
+      showButton
     });
   };
 
@@ -227,16 +225,33 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
   const nameRef = useRef<HTMLParagraphElement>(null);
   const disclaimerRef = useRef<HTMLDivElement>(null);
 
+  // Sync state to refs when they mount or when config values change
   useEffect(() => {
-    if (bestRef.current) bestRef.current.innerHTML = config.signatureBest || '';
-    if (nameRef.current) nameRef.current.innerHTML = config.signatureName || '';
-    if (disclaimerRef.current) disclaimerRef.current.innerHTML = config.disclaimerText || '';
-  }, [config.signatureBest, config.signatureName, config.disclaimerText]);
+    if (config.showSignature) {
+      if (bestRef.current) bestRef.current.innerHTML = config.signatureBest || '';
+      if (nameRef.current) nameRef.current.innerHTML = config.signatureName || '';
+    }
+    if (config.showDisclaimer) {
+      if (disclaimerRef.current) disclaimerRef.current.innerHTML = config.disclaimerText || '';
+    }
+  }, [
+    config.signatureBest, 
+    config.signatureName, 
+    config.disclaimerText, 
+    config.showSignature, 
+    config.showDisclaimer
+  ]);
 
   const syncContent = () => {
-    if (disclaimerRef.current) onConfigChange({ disclaimerText: disclaimerRef.current.innerHTML });
-    if (bestRef.current) onConfigChange({ signatureBest: bestRef.current.innerHTML });
-    if (nameRef.current) onConfigChange({ signatureName: nameRef.current.innerHTML });
+    const updates: Partial<Config> = {};
+    if (disclaimerRef.current) updates.disclaimerText = disclaimerRef.current.innerHTML;
+    if (bestRef.current) updates.signatureBest = bestRef.current.innerHTML;
+    if (nameRef.current) updates.signatureName = nameRef.current.innerHTML;
+    
+    if (Object.keys(updates).length > 0) {
+      onConfigChange(updates);
+    }
+
     if (activeSectionId) {
       const activeEl = document.querySelector('.section-item-v4.active .v4-editor');
       if (activeEl) onUpdateSection(activeSectionId, { text: activeEl.innerHTML });
@@ -271,7 +286,6 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
             left: rect.left - containerRect.left + rect.width / 2
           });
           
-          // Always save range so we can restore it when applying/removing
           setSavedRange(range.cloneRange());
           setShowLinkTool(true);
         } else if (!isUrlInputMode) {
@@ -299,7 +313,6 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
       selection?.addRange(savedRange);
     }
     document.execCommand('unlink', false);
-    // Remove blue text and underline by clearing all inline styles
     document.execCommand('removeFormat', false);
     syncContent();
     setShowLinkTool(false);
@@ -316,7 +329,6 @@ export const Preview: React.FC<PreviewProps> = ({ config, onUpdateSection, onAdd
 
     const trimmed = urlValue.trim();
     if (!trimmed || trimmed === 'https://' || trimmed === 'http://') {
-      // If input is empty, treat as unlink and remove formatting
       document.execCommand('unlink', false);
       document.execCommand('removeFormat', false);
     } else {

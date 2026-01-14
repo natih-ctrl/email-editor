@@ -32,12 +32,13 @@
 
 .section-item-v4 {
   position: relative;
-  margin-bottom: 12px;
-  /* Light blue border by default to show users where fields are, as per screenshot */
+  /* Visual gap of 16px between any two sections */
+  padding-bottom: 16px;
   border: 1px solid #BFDBFE;
   border-radius: 4px;
   transition: all 0.2s ease;
   background: #ffffff;
+  margin-bottom: 0;
 }
 
 .section-item-v4.active {
@@ -48,12 +49,13 @@
 
 .v4-editor {
   width: 100%;
-  padding: 16px 12px;
+  /* Removed 16px vertical padding that caused "double" spacing */
+  padding: 4px 12px; 
   outline: none;
   font-size: 16px;
   line-height: 24px;
   color: #020621;
-  min-height: 56px;
+  min-height: 24px;
 }
 
 .v4-editor a {
@@ -61,7 +63,7 @@
   text-decoration: underline;
 }
 
-/* Updated: Always show placeholder when the editor is empty, regardless of active state */
+/* Always show placeholder when the editor is empty */
 .v4-editor:empty:before {
   content: attr(data-placeholder);
   color: #94a3b8;
@@ -76,7 +78,7 @@
   background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 4px;
-  margin: 8px 0;
+  margin: 0;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
@@ -386,7 +388,8 @@
 }
 
 .v4-signature {
-  padding: 16px 0;
+  /* Signature 32 from the top and bottom */
+  padding: 32px 0 32px 0;
 }
 
 .v4-signature p {
@@ -396,13 +399,15 @@
 }
 
 .v4-disclaimer {
-  padding: 16px 0 0;
+  /* Updated: Padding deleted here as requested */
 }
 
 .v4-disclaimer-div {
   height: 1px;
   background: #DEDEDE;
-  margin-bottom: 24px;
+  /* Updated: Only 32 from the divider to the text below */
+  margin-bottom: 32px;
+  margin-top: 0;
 }
 
 .v4-disclaimer-text {
@@ -413,7 +418,7 @@
 }
 
 .v4-divider-wrap {
-  padding: 16px 0;
+  padding: 0 0 16px 0;
 }
 
 .v4-divider-line {

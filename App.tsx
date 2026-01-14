@@ -81,9 +81,12 @@ const App: React.FC = () => {
         const height = td.getAttribute('height');
         if (height === '40' || height === '32' || height === '12' || height === '24') return;
 
-        // 2. Detect Signature Block
-        // We look for the characteristic signature padding or a TD with two P tags at the end of content
-        if (style.includes('padding: 16px 20px') || style.includes('padding: 40px 20px 24px 20px')) {
+        // 2. Detect Signature Block (Recognize 32px top padding)
+        if (style.includes('padding: 16px 20px') || 
+            style.includes('padding: 0 20px 16px 20px') || 
+            style.includes('padding: 40px 20px 24px 20px') ||
+            style.includes('padding: 32px 20px 32px 20px') ||
+            style.includes('padding: 32px 20px 16px 20px')) {
           const ps = td.querySelectorAll('p');
           if (ps.length >= 2) {
             importedSigBest = ps[0].innerHTML.trim();
@@ -93,21 +96,19 @@ const App: React.FC = () => {
           }
         }
 
-        // 3. Detect Disclaimer Block
-        // Characterized by 12px font size and justify alignment
-        if (style.includes('font-size: 12px') && (style.includes('text-align: justify') || style.includes('color: #3A4850'))) {
+        // 3. Detect Disclaimer Block (Look for the cell with 32px top padding)
+        if (style.includes('font-size: 12px') && 
+           (style.includes('text-align: justify') || style.includes('color: #3A4850'))) {
           importedDisclaimer = innerHTML;
           hasDisclaimer = true;
           return;
         }
 
         // 4. Detect Divider Section
-        // Look for the specific divider div
         const div = td.querySelector('div');
         if (div) {
           const divStyle = div.getAttribute('style') || '';
           if (divStyle.includes('background-color: #DEDEDE') || divStyle.includes('rgb(222, 222, 222)')) {
-            // Check if it's just the disclaimer separator
             const isDisclaimerSeparator = index + 1 < rows.length && 
               (rows[index+1].querySelector('td')?.getAttribute('style')?.includes('font-size: 12px') || false);
             
@@ -150,7 +151,6 @@ const App: React.FC = () => {
         } else if (h2) {
           sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'h2', text: h2.innerHTML.trim() });
         } else if (p) {
-          // Verify it's not the signature (which we already handled)
           if (!hasSignature || (p.innerHTML.trim() !== importedSigBest && p.innerHTML.trim() !== importedSigName)) {
             sections.push({ id: Math.random().toString(36).substr(2, 9), type: 'p', text: p.innerHTML.trim() });
           }
@@ -182,7 +182,7 @@ const App: React.FC = () => {
   const generateHTML = () => {
     const sectionsHTML = config.sections.map((section) => {
       const fontFamily = "font-family: Roboto, Helvetica, Arial, sans-serif;";
-      const rowPadding = "padding: 16px 20px;";
+      const rowPadding = "padding: 0 20px 16px 20px;";
       
       switch (section.type) {
         case 'h1':
@@ -192,7 +192,7 @@ const App: React.FC = () => {
         case 'p':
           return `<tr><td style="${rowPadding}"><p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #020621; margin: 0; ${fontFamily}">${section.text || ''}</p></td></tr>`;
         case 'divider':
-          return `<tr><td style="padding: 0 20px;"><div style="height: 1px; background-color: #DEDEDE;"></div></td></tr>`;
+          return `<tr><td style="padding: 0 20px 16px 20px;"><div style="height: 1px; background-color: #DEDEDE;"></div></td></tr>`;
         case 'callout':
           return `
             <tr><td style="${rowPadding}">
@@ -256,7 +256,7 @@ const App: React.FC = () => {
 
             ${config.showSignature ? `
             <tr>
-                <td style="padding: 16px 20px; font-family: Roboto, sans-serif;">
+                <td style="padding: 32px 20px 32px 20px; font-family: Roboto, sans-serif;">
                     <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureBest}</p>
                     <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureName}</p>
                 </td>
@@ -264,12 +264,12 @@ const App: React.FC = () => {
 
             ${config.showDisclaimer ? `
             <tr>
-                <td style="padding: 0 20px;">
+                <td style="padding: 0 20px 0 20px;">
                     <div style="height: 1px; background-color: #DEDEDE;"></div>
                 </td>
             </tr>
             <tr>
-                <td style="padding: 16px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; text-align: justify; font-family: Roboto, sans-serif;">
+                <td style="padding: 32px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; text-align: justify; font-family: Roboto, sans-serif;">
                     ${config.disclaimerText}
                 </td>
             </tr>` : ''}
