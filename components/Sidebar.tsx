@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
-import { Config, Section } from '../types';
-import { Mail, Download, Check, FileUp } from 'lucide-react';
-import './Sidebar.css';
+import React, { useRef } from "react";
+import { Config, Section } from "../types";
+import { Mail, Download, Check, FileUp } from "lucide-react";
+import "./Sidebar.css";
 
 interface SidebarProps {
   config: Config;
@@ -13,8 +13,14 @@ interface SidebarProps {
   onImport: (html: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  config, onChange, onUpdateSection, onCopy, onDownload, onReset, onImport 
+export const Sidebar: React.FC<SidebarProps> = ({
+  config,
+  onChange,
+  onUpdateSection,
+  onCopy,
+  onDownload,
+  onReset,
+  onImport,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,16 +34,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
       };
       reader.readAsText(file);
     }
-    if (e.target) e.target.value = '';
+    if (e.target) e.target.value = "";
   };
 
-  const Checkbox = ({ label, field }: { label: string, field: keyof Config }) => (
-    <div 
+  const Checkbox = ({
+    label,
+    field,
+  }: {
+    label: string;
+    field: keyof Config;
+  }) => (
+    <div
       className="sidebar__checkbox"
       onClick={() => onChange({ [field]: !config[field] })}
     >
-      <div className={`sidebar__checkbox-custom ${config[field] ? 'checked' : ''}`}>
-        {config[field] && <Check size={14} strokeWidth={3} className="sidebar__checkbox-tick" />}
+      <div
+        className={`sidebar__checkbox-custom ${config[field] ? "checked" : ""}`}
+      >
+        {config[field] && (
+          <Check size={14} strokeWidth={3} className="sidebar__checkbox-tick" />
+        )}
       </div>
       <span className="sidebar__checkbox-label">{label}</span>
     </div>
@@ -47,9 +63,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="sidebar">
       <div className="sidebar__header">
         <div className="sidebar__icon-box">
-          <Mail className="icon-md" strokeWidth={2.5} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="70"
+            height="70"
+            viewBox="0 0 70 70"
+            fill="none"
+          >
+            <rect
+              x="1"
+              y="1"
+              width="68"
+              height="68"
+              rx="34"
+              stroke="#1358A7"
+              stroke-width="2"
+            />
+            <path
+              d="M34.1667 36.1579L20.8333 27.7368V44.5789H35.8333V47.9474H20.8333C19.9167 47.9474 19.1319 47.6175 18.4792 46.9579C17.8264 46.2982 17.5 45.5053 17.5 44.5789V24.3684C17.5 23.4421 17.8264 22.6491 18.4792 21.9895C19.1319 21.3298 19.9167 21 20.8333 21H47.5C48.4167 21 49.2014 21.3298 49.8542 21.9895C50.5069 22.6491 50.8333 23.4421 50.8333 24.3684V36.1579H47.5V27.7368L34.1667 36.1579ZM34.1667 32.7895L47.5 24.3684H20.8333L34.1667 32.7895ZM45.8333 53L43.5 50.6421L46.125 47.9474H39.1667V44.5789H46.125L43.4583 41.8842L45.8333 39.5263L52.5 46.2632L45.8333 53ZM20.8333 27.7368V46.2632V36.1579V36.2842V24.3684V27.7368Z"
+              fill="#1358A7"
+            />
+          </svg>
         </div>
-        <h1 className="sidebar__title">Callout<br />Automation<br />Generator</h1>
+        <h1 className="sidebar__title">
+          Callout
+          <br />
+          Automation
+          <br />
+          Generator
+        </h1>
       </div>
 
       <div className="sidebar__content">
@@ -68,7 +110,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button onClick={onDownload} className="btn btn--primary">
           <Download className="icon-sm" /> Download
         </button>
-        <button onClick={() => fileInputRef.current?.click()} className="btn btn--primary">
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="btn btn--primary"
+        >
           <FileUp className="icon-sm" /> Import HTML
         </button>
         <button onClick={onCopy} className="btn btn--outline">
@@ -77,11 +122,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button onClick={onReset} className="btn btn--outline">
           New Email
         </button>
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          style={{ display: 'none' }} 
-          accept=".html,.htm" 
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept=".html,.htm"
           onChange={handleFileChange}
         />
       </div>
