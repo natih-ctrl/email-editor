@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Config, Section } from "../types";
+import "./Preview.css";
 import {
   X,
   Plus,
@@ -12,7 +13,6 @@ import {
   Link as LinkIcon,
   Link2Off,
 } from "lucide-react";
-import "./Preview.css";
 
 interface PreviewProps {
   config: Config;
@@ -25,9 +25,9 @@ interface PreviewProps {
 const Toolbar: React.FC<{
   section: Section;
   onUpdate: (updates: Partial<Section>) => void;
-  onClose: () => void;
+
   onRemove: () => void;
-}> = ({ section, onUpdate, onClose, onRemove }) => {
+}> = ({ section, onUpdate, onRemove }) => {
   const changeType = (
     newType: Section["type"],
     showButton: boolean = false,
@@ -40,53 +40,111 @@ const Toolbar: React.FC<{
 
   return (
     <div className="toolbar-v4" onClick={(e) => e.stopPropagation()}>
-      <button
-        onClick={onClose}
-        className="toolbar-v4__btn toolbar-v4__btn--close"
-        title="Close Toolbar"
-      >
-        <X size={18} color="#2563EB" strokeWidth={2.5} />
-      </button>
-      <div className="toolbar-v4__divider" />
       <div className="toolbar-v4__actions">
         <button
           onClick={() => changeType("h1")}
           className={`toolbar-v4__btn ${section.type === "h1" ? "active" : ""}`}
         >
-          H1
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="10"
+            viewBox="0 0 18 10"
+            fill="none"
+          >
+            <path
+              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM10 10V6C10 5.45 10.1958 4.97917 10.5875 4.5875C10.9792 4.19583 11.45 4 12 4H16V2H10V0H16C16.55 0 17.0208 0.195833 17.4125 0.5875C17.8042 0.979167 18 1.45 18 2V4C18 4.55 17.8042 5.02083 17.4125 5.4125C17.0208 5.80417 16.55 6 16 6H12V8H18V10H10Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
         <button
           onClick={() => changeType("h2")}
           className={`toolbar-v4__btn ${section.type === "h2" ? "active" : ""}`}
         >
-          H2
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="10"
+            viewBox="0 0 14 10"
+            fill="none"
+          >
+            <path
+              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM12 10V2H10V0H14V10H12Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
         <button
           onClick={() => changeType("p")}
           className={`toolbar-v4__btn ${section.type === "p" ? "active" : ""}`}
         >
-          Tt
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="12"
+            viewBox="0 0 15 12"
+            fill="none"
+          >
+            <path
+              d="M3.75 12V2.25H0V0H9.75V2.25H6V12H3.75ZM10.5 12V6H8.25V3.75H15V6H12.75V12H10.5Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
         <button
           onClick={() => changeType("callout", false)}
           className={`toolbar-v4__btn ${section.type === "callout" && !section.showButton ? "active" : ""}`}
         >
-          <Circle size={18} strokeWidth={1.5} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M8 16C6.89333 16 5.85333 15.79 4.88 15.37C3.90667 14.95 3.06 14.38 2.34 13.66C1.62 12.94 1.05 12.0933 0.63 11.12C0.21 10.1467 0 9.10667 0 8C0 6.89333 0.21 5.85333 0.63 4.88C1.05 3.90667 1.62 3.06 2.34 2.34C3.06 1.62 3.90667 1.05 4.88 0.63C5.85333 0.21 6.89333 0 8 0C9.10667 0 10.1467 0.21 11.12 0.63C12.0933 1.05 12.94 1.62 13.66 2.34C14.38 3.06 14.95 3.90667 15.37 4.88C15.79 5.85333 16 6.89333 16 8C16 9.10667 15.79 10.1467 15.37 11.12C14.95 12.0933 14.38 12.94 13.66 13.66C12.94 14.38 12.0933 14.95 11.12 15.37C10.1467 15.79 9.10667 16 8 16ZM8 14.4C9.78667 14.4 11.3 13.78 12.54 12.54C13.78 11.3 14.4 9.78667 14.4 8C14.4 6.21333 13.78 4.7 12.54 3.46C11.3 2.22 9.78667 1.6 8 1.6C6.21333 1.6 4.7 2.22 3.46 3.46C2.22 4.7 1.6 6.21333 1.6 8C1.6 9.78667 2.22 11.3 3.46 12.54C4.7 13.78 6.21333 14.4 8 14.4Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
         <button
           onClick={() => changeType("callout", true)}
           className={`toolbar-v4__btn ${section.type === "callout" && section.showButton ? "active" : ""}`}
         >
-          <MousePointer2 size={18} strokeWidth={1.5} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="17"
+            height="17"
+            viewBox="0 0 17 17"
+            fill="none"
+          >
+            <path
+              d="M8.77317 16.0573C8.65244 16.0841 8.53171 16.0976 8.41098 16.0976H8.04878C6.93537 16.0976 5.88902 15.8863 4.90976 15.4637C3.93049 15.0412 3.07866 14.4677 2.35427 13.7433C1.62988 13.0189 1.0564 12.1671 0.633841 11.1878C0.21128 10.2085 0 9.1622 0 8.04878C0 6.93537 0.21128 5.88902 0.633841 4.90976C1.0564 3.93049 1.62988 3.07866 2.35427 2.35427C3.07866 1.62988 3.93049 1.0564 4.90976 0.633841C5.88902 0.21128 6.93537 0 8.04878 0C9.1622 0 10.2085 0.21128 11.1878 0.633841C12.1671 1.0564 13.0189 1.62988 13.7433 2.35427C14.4677 3.07866 15.0412 3.93049 15.4637 4.90976C15.8863 5.88902 16.0976 6.93537 16.0976 8.04878V8.41098C16.0976 8.53171 16.0841 8.65244 16.0573 8.77317L14.4878 8.29024V8.04878C14.4878 6.25122 13.864 4.72866 12.6165 3.4811C11.3689 2.23354 9.84634 1.60976 8.04878 1.60976C6.25122 1.60976 4.72866 2.23354 3.4811 3.4811C2.23354 4.72866 1.60976 6.25122 1.60976 8.04878C1.60976 9.84634 2.23354 11.3689 3.4811 12.6165C4.72866 13.864 6.25122 14.4878 8.04878 14.4878H8.29024L8.77317 16.0573ZM14.9104 16.5L11.4695 13.0591L10.4634 16.0976L8.04878 8.04878L16.0976 10.4634L13.0591 11.4695L16.5 14.9104L14.9104 16.5Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
         <button
           onClick={() => changeType("divider")}
           className={`toolbar-v4__btn ${section.type === "divider" ? "active" : ""}`}
         >
-          <ArrowDownToLine size={18} strokeWidth={1.5} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M16 16H0V14.2227H16V16ZM8.88867 9.04492L10.3115 7.64453L11.5557 8.88867L8 12.4443L4.44434 8.88867L5.68848 7.64453L7.11133 9.04492V3.55566H8.88867V9.04492ZM16 1.77734H0V0H16V1.77734Z"
+              fill="#1F1F1F"
+            />
+          </svg>
         </button>
 
-        <div className="toolbar-v4__divider" style={{ margin: "0 4px" }} />
+        <div className="toolbar-v4__divider" />
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -95,7 +153,18 @@ const Toolbar: React.FC<{
           className="toolbar-v4__btn"
           title="Delete Section"
         >
-          <Delete size={18} color="#EF4444" strokeWidth={1.5} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="18"
+            viewBox="0 0 16 18"
+            fill="none"
+          >
+            <path
+              d="M3 18C2.45 18 1.97917 17.8042 1.5875 17.4125C1.19583 17.0208 1 16.55 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8042 17.0208 14.4125 17.4125C14.0208 17.8042 13.55 18 13 18H3ZM13 3H3V16H13V3ZM5 14H7V5H5V14ZM9 14H11V5H9V14Z"
+              fill="#D34E15"
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -160,7 +229,7 @@ const SectionItem: React.FC<{
 
   return (
     <div
-      className="section-item-v4"
+      className={`section-item-v4 ${isActive ? "active-section" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
         onSetActive(section.id);
@@ -170,7 +239,6 @@ const SectionItem: React.FC<{
         <Toolbar
           section={section}
           onUpdate={(u) => onUpdate(section.id, u)}
-          onClose={() => onSetActive(null)}
           onRemove={() => onRemove(section.id)}
         />
       )}
@@ -187,6 +255,7 @@ const SectionItem: React.FC<{
               key={`editor-${section.id}-${section.type}`}
               ref={contentRef}
               contentEditable
+              suppressContentEditableWarning
               onBlur={handleBlur}
               className="v4-editor v4-callout-text"
               data-placeholder={getPlaceholder()}
@@ -197,6 +266,7 @@ const SectionItem: React.FC<{
                   ref={btnTextRef}
                   className="v4-callout-btn"
                   contentEditable
+                  suppressContentEditableWarning
                   onBlur={handleBtnBlur}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -253,6 +323,7 @@ const SectionItem: React.FC<{
           key={`editor-${section.id}-${section.type}`}
           ref={contentRef}
           contentEditable
+          suppressContentEditableWarning
           onBlur={handleBlur}
           className={`v4-editor type-${section.type}`}
           data-placeholder={getPlaceholder()}
@@ -490,11 +561,13 @@ export const Preview: React.FC<PreviewProps> = ({
 
       {config.showLogo && (
         <div className="v4-logo-header">
-          <img
-            className="desktop-version-logo"
-            src="https://www.glassesusa.com/media/wysiwyg/lp26/gusalogo.png"
-            alt="GlassesUSA"
-          />
+          <a href="https://www.glassesusa.com">
+            <img
+              className="desktop-version-logo"
+              src="https://www.glassesusa.com/media/wysiwyg/lp26/gusalogo.png"
+              alt="GlassesUSA"
+            />
+          </a>
         </div>
       )}
 
@@ -527,7 +600,15 @@ export const Preview: React.FC<PreviewProps> = ({
             }}
             title="Add New Section"
           >
-            <Plus size={24} strokeWidth={1.5} />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+            >
+              <path d="M6 8H0V6H6V0H8V6H14V8H8V14H6V8Z" fill="#1F1F1F" />
+            </svg>
           </button>
         </div>
 
@@ -591,6 +672,7 @@ export const Preview: React.FC<PreviewProps> = ({
                 <b className="trans-txt-d-inline" style={{ display: "block" }}>
                   Need help with your order?
                 </b>
+                &nbsp;
                 <span
                   className="trans-txt-d-normal"
                   style={{ fontSize: "18px" }}
@@ -604,12 +686,14 @@ export const Preview: React.FC<PreviewProps> = ({
             </tr>
             <tr style={{ display: "table", margin: "auto" }}>
               <td>
-                <img
-                  src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/chat-cta.png"
-                  className="colored"
-                  style={{ display: "none" }}
-                  alt="chat"
-                />
+                <a href="https://www.glassesusa.com/">
+                  <img
+                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/chat-cta.png"
+                    className="colored"
+                    style={{ display: "none" }}
+                    alt="chat"
+                  />
+                </a>
               </td>
               <td width="8"></td>
               <td>
@@ -636,12 +720,14 @@ export const Preview: React.FC<PreviewProps> = ({
             </tr>
             <tr style={{ display: "table", margin: "auto" }}>
               <td>
-                <img
-                  className="logomobile"
-                  width="108"
-                  src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/lc-n.png"
-                  alt="chat"
-                />
+                <a href="https://www.glassesusa.com/">
+                  <img
+                    className="logomobile"
+                    width="108"
+                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/lc-n.png"
+                    alt="chat"
+                  />
+                </a>
               </td>
               <td width="8"></td>
               <td>
@@ -667,11 +753,11 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
             </tr>
             <tr>
-              <td height="30"></td>
+              <td height="38"></td>
             </tr>
             <tr style={{ display: "table", margin: "auto" }}>
               <td>
-                <a href="#">
+                <a href="https://www.facebook.com/GlassesUSA/">
                   <img
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/facebook.png"
                     alt="facebook"
@@ -680,7 +766,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
               <td width="36"></td>
               <td>
-                <a href="#">
+                <a href="https://www.instagram.com/glassesusa/">
                   <img
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/instagram.png"
                     alt="instagram"
@@ -689,7 +775,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
               <td width="36"></td>
               <td>
-                <a href="#">
+                <a href="https://twitter.com/GlassesUSA">
                   <img
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/tiktok.png"
                     alt="tiktok"
@@ -698,7 +784,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
               <td width="36"></td>
               <td>
-                <a href="#">
+                <a href="https://twitter.com/GlassesUSA">
                   <img
                     style={{ verticalAlign: "top" }}
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp26/x.png"
@@ -708,7 +794,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
               <td width="36"></td>
               <td>
-                <a href="#">
+                <a href="https://www.youtube.com/user/GlassesUSA">
                   <img
                     style={{ verticalAlign: "top" }}
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/youtube.png"
@@ -718,7 +804,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
               <td width="36"></td>
               <td>
-                <a href="#">
+                <a href="https://www.pinterest.com/glassesusa/">
                   <img
                     src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/pinterest.png"
                     alt="pinterest"
@@ -727,7 +813,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
             </tr>
             <tr>
-              <td height="38"></td>
+              <td height="24"></td>
             </tr>
             <tr>
               <td align="center">
@@ -751,7 +837,7 @@ export const Preview: React.FC<PreviewProps> = ({
               </td>
             </tr>
             <tr>
-              <td height="40"></td>
+              <td height="24"></td>
             </tr>
           </tbody>
         </table>

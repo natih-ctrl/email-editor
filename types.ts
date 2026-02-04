@@ -38,7 +38,7 @@ export const DEFAULT_CONFIG: Config = {
     {
       id: '1',
       type: 'p',
-      text: 'Start typing your content here...',
+      text: '',
     }
   ]
 };

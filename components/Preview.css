@@ -16,7 +16,7 @@
 .v4-logo-header {
   padding: 40px 20px 32px 20px;
   text-align: left;
-  background: #fff;
+ 
 }
 
 .desktop-version-logo {
@@ -25,7 +25,7 @@
 }
 
 .v4-main-body {
-  background: #ffffff;
+
   padding: 0 20px 40px 20px;
   flex: 1;
 }
@@ -37,7 +37,6 @@
   border: 1px solid #BFDBFE;
   border-radius: 4px;
   transition: all 0.2s ease;
-  background: #ffffff;
   margin-bottom: 0;
 }
 
@@ -49,8 +48,7 @@
 
 .v4-editor {
   width: 100%;
-  /* Removed 16px vertical padding that caused "double" spacing */
-  padding: 4px 12px; 
+  padding: 4px 0px; 
   outline: none;
   font-size: 16px;
   line-height: 24px;
@@ -237,8 +235,7 @@
   align-items: center;
 }
 
-.v4-link-input-btns button.v4-apply { color: #10B981; }
-.v4-link-input-btns button.v4-remove { color: #EF4444; }
+
 
 .toolbar-v4 {
   position: absolute;
@@ -247,52 +244,55 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #ffffff;
-  border-radius: 40px;
+
   padding: 8px 12px;
-  box-shadow: 0 4px 25px rgba(0,0,0,0.12);
   z-index: 500;
   border: 1px solid #F1F5F9;
+  border-radius: 100px;
+border: 1px solid  #DEDEDE;
+background: #FFF;
+box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 6px 13px 0 rgba(0, 0, 0, 0.06), 0 1px 6px 0 rgba(0, 0, 0, 0.04);
 }
 
 .toolbar-v4__btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+ width: 40px;
+height: 40px;
+
   border: 1px solid #E5E7EB;
   background: #ffffff;
-  color: #1F2937;
-  font-size: 14px;
-  font-weight: 700;
+
+
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+ 
+
+  border-radius: 100px;
+border: 1px solid rgba(0, 0, 0, 0.10);
+background: #F1F3F4;
 }
 
 .toolbar-v4__btn:hover {
-  background: #F9FAFB;
-  border-color: #D1D5DB;
-  transform: translateY(-1px);
-}
+border-color: rgba(0, 0, 0,0.30);
 
+}
+.toolbar-v4__btn:last-child:hover  {
+background-color: #FCF0E4;
+
+
+}
 .toolbar-v4__btn.active {
-  background: #ffffff;
-  border-color: #2563EB;
-  color: #2563EB;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+background:  #E7F4FE;
+  border-color: #1358A7;
 }
 
-.toolbar-v4__btn--close {
-  border-color: #2563EB;
-  background: #EFF6FF;
-  color: #2563EB;
-}
+.toolbar-v4__btn.active path {
 
+fill: #1358A7;
+}
 .toolbar-v4__divider {
   width: 1px;
   height: 24px;
@@ -302,7 +302,7 @@
 
 .toolbar-v4__actions {
   display: flex;
-  gap: 12px;
+  gap: 4px;
 }
 
 .section-v4-side-actions {
@@ -340,8 +340,7 @@
 }
 
 .v4-footer-table {
-  background: #020621;
-  color: #ffffff;
+
   text-align: center;
   font-family: Roboto, Helvetica, sans-serif !important;
 }
@@ -431,19 +430,32 @@
 .v4-add-last-section-btn {
 border-radius: 100px;
 border: 1px solid rgba(0, 0, 0, 0.15);
-background: var(--Greys-white, #FFF);
+background: #FFF;
 width: 40px;
 height: 40px;
-
+transition: 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
 box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05), 0 2px 11px -1px rgba(0, 0, 0, 0.04);
 }
-
-.v4-add-last-section-btn:hover {
-  background-color: #f3f4f6;
-  border-color: #2563eb;
-  color: #2563eb;
+.v4-add-last-section-btn:hover{
+  border-color:  rgba(0, 0, 0, 0.40);
 }
 
-.v4-add-last-section-btn:active {
-  background-color: #e5e7eb;
+
+.section-item-v4 {
+  position: relative;
+
+  border: 1px solid transparent; 
+border-radius: 4px;
+  padding: 0 0 16px 0;       
+  transition: border-color 0.1s ease-in-out;
+}
+
+
+.section-item-v4.active-section {
+border-radius: 4px;
+border: 1px solid var(--Action-Blue-DodgerBlue, #277BDA);
 }
