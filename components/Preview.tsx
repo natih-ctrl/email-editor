@@ -47,13 +47,13 @@ const Toolbar: React.FC<{
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="18"
+            width="14"
             height="10"
-            viewBox="0 0 18 10"
+            viewBox="0 0 14 10"
             fill="none"
           >
             <path
-              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM10 10V6C10 5.45 10.1958 4.97917 10.5875 4.5875C10.9792 4.19583 11.45 4 12 4H16V2H10V0H16C16.55 0 17.0208 0.195833 17.4125 0.5875C17.8042 0.979167 18 1.45 18 2V4C18 4.55 17.8042 5.02083 17.4125 5.4125C17.0208 5.80417 16.55 6 16 6H12V8H18V10H10Z"
+              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM12 10V2H10V0H14V10H12Z"
               fill="#1F1F1F"
             />
           </svg>
@@ -64,13 +64,13 @@ const Toolbar: React.FC<{
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="14"
+            width="18"
             height="10"
-            viewBox="0 0 14 10"
+            viewBox="0 0 18 10"
             fill="none"
           >
             <path
-              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM12 10V2H10V0H14V10H12Z"
+              d="M0 10V0H2V4H6V0H8V10H6V6H2V10H0ZM10 10V6C10 5.45 10.1958 4.97917 10.5875 4.5875C10.9792 4.19583 11.45 4 12 4H16V2H10V0H16C16.55 0 17.0208 0.195833 17.4125 0.5875C17.8042 0.979167 18 1.45 18 2V4C18 4.55 17.8042 5.02083 17.4125 5.4125C17.0208 5.80417 16.55 6 16 6H12V8H18V10H10Z"
               fill="#1F1F1F"
             />
           </svg>
