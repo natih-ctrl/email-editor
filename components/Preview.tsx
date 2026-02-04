@@ -561,7 +561,7 @@ export const Preview: React.FC<PreviewProps> = ({
 
       {config.showLogo && (
         <div className="v4-logo-header">
-          <a href="https://www.glassesusa.com">
+          <a href="https://www.glassesusa.com" target="_black">
             <img
               className="desktop-version-logo"
               src="https://www.glassesusa.com/media/wysiwyg/lp26/gusalogo.png"
