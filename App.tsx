@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const handleAddSection = (index: number) => {
     const newSection: Section = {
       id: Math.random().toString(36).substr(2, 9),
-      type: "p",
+      type: "h1",
       text: "",
       buttonText: "Upload Now",
       showButton: false,
@@ -51,7 +51,7 @@ const App: React.FC = () => {
       setConfig({
         ...DEFAULT_CONFIG,
         sections: [
-          { id: Math.random().toString(36).substr(2, 9), type: "p", text: "" },
+          { id: Math.random().toString(36).substr(2, 9), type: "h1", text: "" },
         ],
       });
       toast.success("Started new email");

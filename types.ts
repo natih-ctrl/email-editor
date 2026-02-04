@@ -37,7 +37,7 @@ export const DEFAULT_CONFIG: Config = {
   sections: [
     {
       id: '1',
-      type: 'p',
+      type: 'h1',
       text: '',
     }
   ]
