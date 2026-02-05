@@ -1,18 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Config, Section } from "../types";
 import "./Preview.css";
-import {
-  X,
-  Plus,
-  Delete,
-  Circle,
-  ArrowDownToLine,
-  Check,
-  Link2,
-  MousePointer2,
-  Link as LinkIcon,
-  Link2Off,
-} from "lucide-react";
+import { X, Check, Link2, Link as LinkIcon, Link2Off } from "lucide-react";
 
 interface PreviewProps {
   config: Config;
