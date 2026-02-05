@@ -181,7 +181,7 @@ const SectionItem: React.FC<{
   onRemove: (id: string) => void;
 }> = ({ section, index, isActive, onSetActive, onUpdate, onAdd, onRemove }) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const btnTextRef = useRef<HTMLButtonElement>(null);
+  const btnTextRef = useRef<HTMLDivElement>(null);
 
   // 1. Force this to false so the input is HIDDEN by default on load
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -211,6 +211,21 @@ const SectionItem: React.FC<{
   const handleBtnBlur = () => {
     if (btnTextRef.current) {
       onUpdate(section.id, { buttonText: btnTextRef.current.innerHTML });
+    }
+  };
+
+  const handlePastePlain = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text/plain");
+    try {
+      document.execCommand("insertText", false, text);
+    } catch (err) {
+      const escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      const html = escaped.replace(/\r\n|\r|\n/g, "");
+      document.execCommand("insertHTML", false, html);
     }
   };
 
@@ -257,21 +272,25 @@ const SectionItem: React.FC<{
               contentEditable
               suppressContentEditableWarning
               onBlur={handleBlur}
+              onPaste={handlePastePlain}
               className="v4-editor v4-callout-text"
               data-placeholder={getPlaceholder()}
             />
             {section.showButton && (
               <div className="v4-callout-actions-row">
-                <button
+                <div
                   ref={btnTextRef}
                   className="v4-callout-btn"
                   contentEditable
                   suppressContentEditableWarning
                   onBlur={handleBtnBlur}
                   onClick={(e) => e.stopPropagation()}
+                  onPaste={handlePastePlain}
+                  role="textbox"
+                  tabIndex={0}
                 >
                   {section.buttonText || "Upload Now"}
-                </button>
+                </div>
 
                 {/* 2. Logic: The input only shows if showUrlInput is true. It starts false. */}
                 {showUrlInput ? (
@@ -325,6 +344,7 @@ const SectionItem: React.FC<{
           contentEditable
           suppressContentEditableWarning
           onBlur={handleBlur}
+          onPaste={handlePastePlain}
           className={`v4-editor type-${section.type}`}
           data-placeholder={getPlaceholder()}
           onKeyPress={(e) => {
@@ -353,6 +373,9 @@ export const Preview: React.FC<PreviewProps> = ({
   const [hasExistingLink, setHasExistingLink] = useState(false);
   const [toolPosition, setToolPosition] = useState({ top: 0, left: 0 });
   const [savedRange, setSavedRange] = useState<Range | null>(null);
+  const [prevSectionsLength, setPrevSectionsLength] = useState(
+    config.sections.length,
+  );
 
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const bestRef = useRef<HTMLParagraphElement>(null);
@@ -377,6 +400,17 @@ export const Preview: React.FC<PreviewProps> = ({
     config.showSignature,
     config.showDisclaimer,
   ]);
+
+  useEffect(() => {
+    // Auto-focus newly created sections
+    if (config.sections.length > prevSectionsLength) {
+      const newSection = config.sections[config.sections.length - 1];
+      if (newSection) {
+        setActiveSectionId(newSection.id);
+      }
+    }
+    setPrevSectionsLength(config.sections.length);
+  }, [config.sections.length]);
 
   const syncContent = () => {
     const updates: Partial<Config> = {};
@@ -453,8 +487,21 @@ export const Preview: React.FC<PreviewProps> = ({
       }
     };
 
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        previewContainerRef.current &&
+        !previewContainerRef.current.contains(e.target as Node)
+      ) {
+        setActiveSectionId(null);
+      }
+    };
+
     document.addEventListener("mouseup", handleSelection);
-    return () => document.removeEventListener("mouseup", handleSelection);
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("mouseup", handleSelection);
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, [isUrlInputMode]);
 
   const toggleUrlInput = (e: React.MouseEvent) => {
@@ -564,7 +611,7 @@ export const Preview: React.FC<PreviewProps> = ({
           <a href="https://www.glassesusa.com" target="_black">
             <img
               className="desktop-version-logo"
-              src="https://www.glassesusa.com/media/wysiwyg/lp26/gusalogo.png"
+              src="https://optimaxweb.glassesusa.com/image/upload/v1770291950/media/wysiwyg/glasseslogemail.png"
               alt="GlassesUSA"
             />
           </a>
@@ -815,19 +862,7 @@ export const Preview: React.FC<PreviewProps> = ({
             <tr>
               <td height="24"></td>
             </tr>
-            <tr>
-              <td align="center">
-                <img
-                  src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/line-border.png"
-                  width="300"
-                  style={{ display: "block", margin: "auto" }}
-                  alt=""
-                />
-              </td>
-            </tr>
-            <tr>
-              <td height="12"></td>
-            </tr>
+
             <tr>
               <td
                 className="v4-footer-copy-td"

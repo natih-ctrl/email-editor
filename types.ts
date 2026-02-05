@@ -5,6 +5,8 @@ export interface Section {
   type: SectionType;
   text: string;
   buttonText?: string;
+  showButton?: boolean;
+  url?: string;
 }
 
 export interface Config {

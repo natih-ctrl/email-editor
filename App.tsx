@@ -265,7 +265,7 @@ const App: React.FC = () => {
                       section.showButton
                         ? `
                     <div style="padding-top: 16px;">
-                      <a href="${section.url || "#"}" style="background-color: #020621; color: #ffffff; padding: 10px 24px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">${section.buttonText || "Upload Now"}</a>
+                      <a href="${section.url || "#"}" style="background-color: #020621; color: #ffffff; padding: 0px 20px;height:32px; line-height:32px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">${section.buttonText || "Upload Now"}</a>
                     </div>`
                         : ""
                     }
@@ -301,10 +301,12 @@ const App: React.FC = () => {
         }
     </style>
 </head>
-<body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif;">
-    <table  border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0 20px 0px 20px;display: block;">
+<body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif;margin-top:40px;">
+    ${
+      config.showLogo
+        ? `<table  border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
         <tbody>
-            <tr><td height="40"></td></tr>
+       
             <tr>
                 <td>
                       <a href="https://www.glassesusa.com">
@@ -314,7 +316,9 @@ const App: React.FC = () => {
             </tr>
             <tr><td class="desktop-version-width-height" height="32"></td></tr>
         </tbody>
-    </table>
+    </table>`
+        : ""
+    }
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
         <tbody>
@@ -324,7 +328,7 @@ ${sectionsHTML}
               config.showSignature
                 ? `
             <tr>
-                <td style="padding: 32px 20px 32px 20px; font-family: Roboto, sans-serif;">
+                <td style="padding: 16px 20px 32px 20px; font-family: Roboto, sans-serif;">
                     <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureBest}</p>
                     <p style="margin: 0; font-size: 16px; color: #020621; font-weight: 400;">${config.signatureName}</p>
                 </td>
@@ -415,15 +419,7 @@ ${sectionsHTML}
                             
                             <tr><td height="24"></td></tr>
                              <tr>
-              <td align="center">
-                <img
-                  src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/line-border.png"
-                  width="300"
-                  style=" display: block; margin: auto;"
-                  alt=""
-                />
-              </td>
-            </tr>     <tr><td height="12"></td></tr>
+       
                           
                             <tr>
                                 <td style="font-family: Roboto, sans-serif; font-size: 12px; line-height: 25px; text-align: center; color: #B0BDC5;">
