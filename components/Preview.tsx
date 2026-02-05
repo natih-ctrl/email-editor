@@ -209,6 +209,13 @@ const SectionItem: React.FC<{
     }
   }, [isActive]);
 
+  useEffect(() => {
+    // Auto-focus when section type changes so typing starts immediately
+    if (isActive && contentRef.current && section.type !== "divider") {
+      contentRef.current.focus();
+    }
+  }, [section.type, isActive]);
+
   const handleBlur = () => {
     if (contentRef.current) {
       onUpdate(section.id, { text: contentRef.current.innerHTML });
