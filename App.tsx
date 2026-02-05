@@ -345,7 +345,7 @@ ${sectionsHTML}
                 </td>
             </tr>
             <tr>
-                <td style="padding: 32px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; text-align: justify; font-family: Roboto, sans-serif;">
+                <td style="padding: 32px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; font-family: Roboto, sans-serif;">
                     ${config.disclaimerText}
                 </td>
             </tr>`
