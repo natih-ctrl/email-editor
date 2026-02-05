@@ -202,6 +202,13 @@ const SectionItem: React.FC<{
     }
   }, [section.buttonText, section.type]);
 
+  useEffect(() => {
+    // Auto-focus the content editor when section becomes active
+    if (isActive && contentRef.current) {
+      contentRef.current.focus();
+    }
+  }, [isActive]);
+
   const handleBlur = () => {
     if (contentRef.current) {
       onUpdate(section.id, { text: contentRef.current.innerHTML });
