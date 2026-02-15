@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Config, Section } from "../types";
+import { Config, Section } from "../types.ts";
 import "./Preview.css";
 import { X, Check, Link2, Link as LinkIcon, Link2Off } from "lucide-react";
 

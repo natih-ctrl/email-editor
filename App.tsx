@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Sidebar } from "./components/Sidebar";
-import { Preview } from "./components/Preview";
-import { Config, DEFAULT_CONFIG, Section } from "./types";
+import { Sidebar } from "./components/Sidebar.tsx";
+import { Preview } from "./components/Preview.tsx";
+import { Config, DEFAULT_CONFIG, Section } from "./types.ts";
 import { Toaster, toast } from "react-hot-toast";
 
 const App: React.FC = () => {
@@ -79,84 +79,57 @@ const App: React.FC = () => {
         html.includes("Need help with your order?");
 
       const rows = Array.from(doc.querySelectorAll("tr"));
+      const footerStartIndex = rows.findIndex(
+        (tr) =>
+          tr.closest(".v4-footer-table") || tr.closest(".trans-txt-d-bc"),
+      );
 
       rows.forEach((tr, index) => {
+        // Skip footer rows
+        if (footerStartIndex !== -1 && index >= footerStartIndex) return;
+
         const td = tr.querySelector("td") as HTMLElement | null;
         if (!td) return;
 
-        // Skip footer rows
-        if (tr.closest(".v4-footer-table") || tr.closest(".trans-txt-d-bc"))
-          return;
-
         const style = td.getAttribute("style") || "";
-        const innerHTML = td.innerHTML.trim();
+        const innerHTML = td.innerHTML;
+        const textContent = td.textContent || "";
 
-        // 1. Skip layout spacer rows
+        // Skip empty cells
+        if (innerHTML === "" && textContent === "") return;
+
+        // 1. Skip layout spacer rows (height-only rows without text)
         const height = td.getAttribute("height");
-        if (
-          height === "40" ||
-          height === "32" ||
-          height === "12" ||
-          height === "24"
-        )
-          return;
-
-        // 2. Detect Signature Block (Recognize 32px top padding)
-        if (
-          style.includes("padding: 16px 20px") ||
-          style.includes("padding: 0 20px 16px 20px") ||
-          style.includes("padding: 40px 20px 24px 20px") ||
-          style.includes("padding: 32px 20px 32px 20px") ||
-          style.includes("padding: 32px 20px 16px 20px")
-        ) {
-          const ps = td.querySelectorAll("p");
-          if (ps.length >= 2) {
-            importedSigBest = ps[0].innerHTML.trim();
-            importedSigName = ps[1].innerHTML.trim();
-            hasSignature = true;
-            return;
-          }
+        if (height && ["40", "32", "12", "24"].includes(height)) {
+          if (!textContent || textContent.length < 2) return;
         }
 
-        // 3. Detect Disclaimer Block (Look for the cell with 32px top padding)
-        if (
-          style.includes("font-size: 12px") &&
-          (style.includes("text-align: justify") ||
-            style.includes("color: #3A4850"))
-        ) {
-          importedDisclaimer = innerHTML;
-          hasDisclaimer = true;
-          return;
-        }
-
-        // 4. Detect Divider Section
+        // 2. Detect Divider Section
         const div = td.querySelector("div");
-        if (div) {
+        if (
+          div &&
+          !td.querySelector("p") &&
+          !td.querySelector("h1") &&
+          !td.querySelector("h2")
+        ) {
           const divStyle = div.getAttribute("style") || "";
           if (
-            divStyle.includes("background-color: #DEDEDE") ||
-            divStyle.includes("rgb(222, 222, 222)")
+            divStyle.includes("background-color") ||
+            divStyle.includes("border") ||
+            divStyle.includes("height: 1px")
           ) {
-            const isDisclaimerSeparator =
-              index + 1 < rows.length &&
-              (rows[index + 1]
-                .querySelector("td")
-                ?.getAttribute("style")
-                ?.includes("font-size: 12px") ||
-                false);
-
-            if (!isDisclaimerSeparator) {
+            if (!textContent || textContent.length < 5) {
               sections.push({
                 id: Math.random().toString(36).substr(2, 9),
                 type: "divider",
                 text: "",
               });
+              return;
             }
-            return;
           }
         }
 
-        // 5. Detect Callout Section
+        // 3. Detect Callout Section (nested table with colored border)
         const nestedTable = td.querySelector("table");
         if (nestedTable) {
           const borderCell = nestedTable.querySelector(
@@ -164,19 +137,68 @@ const App: React.FC = () => {
           ) as HTMLElement | null;
           const bcStyle = borderCell?.getAttribute("style") || "";
           const isBlue =
-            bcStyle.includes("#2563EB") || bcStyle.includes("rgb(37, 99, 235)");
+            bcStyle.includes("#2563EB") ||
+            bcStyle.includes("rgb(37, 99, 235)") ||
+            bcStyle.includes("rgb(25, 118, 210)");
 
-          if (isBlue) {
-            const contentContainer = nestedTable.querySelector("div");
-            const button = nestedTable.querySelector("a");
-            sections.push({
-              id: Math.random().toString(36).substr(2, 9),
-              type: "callout",
-              text: contentContainer?.innerHTML.trim() || "",
-              showButton: !!button,
-              buttonText: button?.textContent?.trim() || "Upload Now",
-              url: button?.getAttribute("href") || "",
+          if (isBlue || bcStyle.includes("background")) {
+            const contentCells = nestedTable.querySelectorAll("td");
+            let contentText = "";
+            let button = nestedTable.querySelector("a");
+
+            contentCells.forEach((cell) => {
+              const cellStyle = cell.getAttribute("style") || "";
+              if (!cellStyle.includes("width") || !cellStyle.includes("#")) {
+                const divs = cell.querySelectorAll("div");
+                if (divs.length > 0) {
+                  contentText = divs[0].innerHTML;
+                } else {
+                  contentText = cell.innerHTML;
+                }
+              }
             });
+
+            if (contentText) {
+              sections.push({
+                id: Math.random().toString(36).substr(2, 9),
+                type: "callout",
+                text: contentText,
+                showButton: !!button,
+                buttonText: button?.textContent || "Upload Now",
+                url: button?.getAttribute("href") || "",
+              });
+              return;
+            }
+          }
+        }
+
+        // 4. Detect Signature Block (two p tags that are short)
+        const ps = td.querySelectorAll("p");
+        if (ps.length >= 2) {
+          const p1Text = ps[0].innerHTML;
+          const p2Text = ps[1].innerHTML;
+
+          if (
+            p1Text.length > 0 &&
+            p1Text.length < 30 &&
+            p2Text.length > 0 &&
+            p2Text.length < 100
+          ) {
+            const allText = td.textContent || "";
+            if (allText.includes("Best") || allText.includes("Regards")) {
+              importedSigBest = p1Text;
+              importedSigName = p2Text;
+              hasSignature = true;
+              return;
+            }
+          }
+        }
+
+        // 5. Detect Disclaimer Block (small font, long text)
+        if (style.includes("font-size: 12px") || style.includes("font-size: 11px")) {
+          if (innerHTML.length > 100) {
+            importedDisclaimer = innerHTML;
+            hasDisclaimer = true;
             return;
           }
         }
@@ -184,56 +206,80 @@ const App: React.FC = () => {
         // 6. Detect Text Sections (H1, H2, P)
         const h1 = td.querySelector("h1");
         const h2 = td.querySelector("h2");
-        const p = td.querySelector("p");
+        const p = td.querySelector("p:first-child");
 
         if (h1) {
-          sections.push({
-            id: Math.random().toString(36).substr(2, 9),
-            type: "h1",
-            text: h1.innerHTML.trim(),
-          });
-        } else if (h2) {
-          sections.push({
-            id: Math.random().toString(36).substr(2, 9),
-            type: "h2",
-            text: h2.innerHTML.trim(),
-          });
-        } else if (p) {
-          const pText = p.innerHTML.trim();
-          if (pText === "") return;
+          const h1Text = h1.innerHTML;
+          if (h1Text && h1Text.length > 0) {
+            sections.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: "h1",
+              text: h1Text,
+            });
+            return;
+          }
+        }
 
-          if (
-            !hasSignature ||
-            (pText !== importedSigBest && pText !== importedSigName)
-          ) {
+        if (h2) {
+          const h2Text = h2.innerHTML;
+          if (h2Text && h2Text.length > 0) {
+            sections.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: "h2",
+              text: h2Text,
+            });
+            return;
+          }
+        }
+
+        if (p) {
+          const pText = p.innerHTML;
+          if (pText && pText.length > 0) {
             sections.push({
               id: Math.random().toString(36).substr(2, 9),
               type: "p",
               text: pText,
             });
+            return;
+          }
+        }
+
+        // 7. Fallback: If we have text content but no recognized tags, treat as paragraph
+        if (
+          textContent &&
+          textContent.length > 0 &&
+          !textContent.includes("<table") &&
+          !hasSignature &&
+          !hasDisclaimer
+        ) {
+          // Only add if it looks like meaningful content
+          if (textContent.length > 3) {
+            sections.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: "p",
+              text: textContent,
+            });
           }
         }
       });
 
-      if (sections.length > 0 || hasSignature || hasDisclaimer) {
-        setConfig((prev) => ({
-          ...prev,
-          sections: sections.length > 0 ? sections : prev.sections,
-          signatureBest: importedSigBest,
-          signatureName: importedSigName,
-          disclaimerText: importedDisclaimer,
-          showLogo: hasLogo,
-          showSignature: hasSignature,
-          showDisclaimer: hasDisclaimer,
-          showFooter: hasFooter,
-        }));
-        toast.success(`Email imported successfully`);
-      } else {
-        toast.error("Could not find compatible content in HTML");
-      }
+      // Always update config
+      setConfig((prev) => ({
+        ...prev,
+        sections: sections.length > 0 ? sections : prev.sections,
+        signatureBest: importedSigBest,
+        signatureName: importedSigName,
+        disclaimerText: importedDisclaimer,
+        showLogo: hasLogo,
+        showSignature: hasSignature,
+        showDisclaimer: hasDisclaimer,
+        showFooter: hasFooter,
+      }));
+
+      toast.success(`Email imported successfully! Found ${sections.length} sections`);
     } catch (e) {
-      console.error(e);
-      toast.error("Failed to parse HTML");
+      console.error("Import error:", e);
+      toast.error("Failed to parse HTML file");
     }
   };
 
@@ -306,7 +352,7 @@ const App: React.FC = () => {
       config.showLogo
         ? `<table  border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
         <tbody>
-          <tr><td height="40"></td></tr>
+                   <tr><td height="40"></td></tr>
             <tr>
                 <td>
                       <a href="https://www.glassesusa.com">

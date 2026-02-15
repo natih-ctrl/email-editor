@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Config, Section } from "../types";
+import { Config, Section } from "../types.ts";
 import "./Sidebar.css";
 
 interface SidebarProps {
