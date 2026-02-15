@@ -306,7 +306,7 @@ const App: React.FC = () => {
       config.showLogo
         ? `<table  border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
         <tbody>
-       
+          <tr><td height="40"></td></tr>
             <tr>
                 <td>
                       <a href="https://www.glassesusa.com">
