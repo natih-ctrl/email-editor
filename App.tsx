@@ -80,8 +80,7 @@ const App: React.FC = () => {
 
       const rows = Array.from(doc.querySelectorAll("tr"));
       const footerStartIndex = rows.findIndex(
-        (tr) =>
-          tr.closest(".v4-footer-table") || tr.closest(".trans-txt-d-bc"),
+        (tr) => tr.closest(".v4-footer-table") || tr.closest(".trans-txt-d-bc"),
       );
 
       rows.forEach((tr, index) => {
@@ -195,7 +194,10 @@ const App: React.FC = () => {
         }
 
         // 5. Detect Disclaimer Block (small font, long text)
-        if (style.includes("font-size: 12px") || style.includes("font-size: 11px")) {
+        if (
+          style.includes("font-size: 12px") ||
+          style.includes("font-size: 11px")
+        ) {
           if (innerHTML.length > 100) {
             importedDisclaimer = innerHTML;
             hasDisclaimer = true;
@@ -276,7 +278,9 @@ const App: React.FC = () => {
         showFooter: hasFooter,
       }));
 
-      toast.success(`Email imported successfully! Found ${sections.length} sections`);
+      toast.success(
+        `Email imported successfully! Found ${sections.length} sections`,
+      );
     } catch (e) {
       console.error("Import error:", e);
       toast.error("Failed to parse HTML file");
@@ -293,7 +297,7 @@ const App: React.FC = () => {
             return `<tr><td style="padding: 0 20px 16px 20px;"><h2 style="font-size: 18px; font-weight: 700; line-height: 26px; color: #020621; margin: 0; ">${section.text || ""}</h2></td></tr>`;
           case "p":
             if (!section.text || section.text.trim() === "") return "";
-            return `<tr><td style="padding: 0 20px 16px 20px;"><p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #020621; margin: 0; ">${section.text}</p></td></tr>`;
+            return `<tr><td style="padding: 0 20px 16px 20px; font-size: 16px; font-weight: 400; line-height: 24px; color: #020621;"><p style="margin: 0;">${section.text}</p></td></tr>`;
           case "divider":
             return `<tr><td style="padding: 0 20px 16px 20px;"><div style="height: 1px; background-color: #DEDEDE;"></div></td></tr>`;
           case "callout":
@@ -333,8 +337,11 @@ const App: React.FC = () => {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600">
     <title>GlassesUSA.com</title>
     <style>
+    
         @media only screen and (min-width: 420px) {
-            body { font-family: Roboto !important; }
+            body { font-family: Roboto !important;
+             }
+            
             .desktop-version-width { width: 524px !important; }
             img.desktop-version-logo { width: 159px !important; }
             td.desktop-version-width-height { height: 32px !important; }
@@ -347,7 +354,7 @@ const App: React.FC = () => {
         }
     </style>
 </head>
-<body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif;margin-top:40px;">
+<body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif; margin-top:40px; font-size: 16px;">
     ${
       config.showLogo
         ? `<table  border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
