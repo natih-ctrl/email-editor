@@ -236,11 +236,41 @@ const App: React.FC = () => {
 
         if (p) {
           const pText = p.innerHTML;
-          if (pText && pText.length > 0) {
+          const divs = Array.from(p.querySelectorAll("div"));
+
+          // Extract all text including divs and combine with <br>
+          let allText = "";
+
+          // Get text before first div
+          if (divs.length > 0) {
+            const textBeforeDiv = pText
+              .split(/<div[^>]*>/)[0]
+              .replace(/<br\s*\/?>/gi, " ")
+              .replace(/<[^>]+>/g, "")
+              .trim();
+            if (textBeforeDiv.length > 0) {
+              allText += textBeforeDiv;
+            }
+
+            // Add text from each div with <br> spacing
+            divs.forEach((div) => {
+              const divText = (div.textContent || "").trim();
+              if (divText.length > 0) {
+                if (allText.length > 0) allText += "<br><br>";
+                allText += divText;
+              }
+            });
+          } else {
+            // No divs, just use paragraph text
+            allText = pText;
+          }
+
+          // Add as single section if we have content
+          if (allText && allText.length > 3) {
             sections.push({
               id: Math.random().toString(36).substr(2, 9),
               type: "p",
-              text: pText,
+              text: allText,
             });
             return;
           }
