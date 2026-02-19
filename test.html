@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save File Example</title>
+</head>
+<body>
+
+    <button onclick="handleSave()">Save File As</button>
+
+    <script>
+        async function saveFileAs(data, suggestedFilename, mimeType) {
+            try {
+                const blob = new Blob([data], { type: mimeType });
+
+                const pickerOptions = {
+                    suggestedName: suggestedFilename,
+                    types: [{
+                        description: 'Custom File Type',
+                        accept: {
+                            [mimeType]: ['.' + suggestedFilename.split('.').pop()],
+                        },
+                    }],
+                };
+
+                const fileHandle = await window.showSaveFilePicker(pickerOptions);
+
+                const writableFileStream = await fileHandle.createWritable();
+                await writableFileStream.write(blob);
+                await writableFileStream.close();
+
+                alert("File saved successfully!");
+            } catch (err) {
+                console.error('Error saving file:', err);
+            }
+        }
+
+        function handleSave() {
+            const data = "Hello, this is my saved file!";
+            const filename = "myFile.txt";
+            const mimeType = "text/plain";
+
+            saveFileAs(data, filename, mimeType);
+        }
+    </script>
+
+</body>
+</html>

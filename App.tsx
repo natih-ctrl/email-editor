@@ -528,12 +528,36 @@ ${sectionsHTML}
       .then(() => toast.success("HTML Copied!"));
   };
 
-  const handleDownload = () => {
-    const blob = new Blob([generateHTML()], { type: "text/html" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `callout-automation.html`;
-    link.click();
+  const handleDownload = async () => {
+    try {
+      const data = generateHTML();
+      const blob = new Blob([data], { type: "text/html" });
+
+      const pickerOptions = {
+        suggestedName: "callout-automation.html",
+        types: [
+          {
+            description: "HTML File",
+            accept: {
+              "text/html": [".html"],
+            },
+          },
+        ],
+      };
+
+      const fileHandle = await (window as any).showSaveFilePicker(
+        pickerOptions,
+      );
+
+      const writableFileStream = await fileHandle.createWritable();
+      await writableFileStream.write(blob);
+      await writableFileStream.close();
+
+      toast.success("File saved successfully!");
+    } catch (err) {
+      console.error("Error saving file:", err);
+      toast.error("Failed to save file");
+    }
   };
 
   return (
