@@ -1,7 +1,7 @@
 export type SectionType = 'h1' | 'h2' | 'p' | 'callout' | 'divider';
 
 // supported store views
-export type StoreView = 'GlassesUSA' | 'Ottica';
+export type StoreView = 'GlassesUSA' | 'Ottica' ;
 
 export interface StoreConfig {
   uploadUrl: string;
@@ -186,6 +186,8 @@ export const STORE_VIEWS: Record<StoreView, StoreConfig> = {
     buttonBgColor: '#020621',
     buttonTextColor: '#ffffff'
   },
+
+
 };
 
 export interface Section {
