@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Config, Section } from "../types.ts";
+import { Config, Section, StoreView, STORE_VIEWS } from "../types.ts";
 import "./Sidebar.css";
 
 interface SidebarProps {
@@ -99,6 +99,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <h1 className="sidebar__title">CX emails templates Generator</h1>
       <div className="divder"></div>
       <div className="sidebar__content">
+        <div className="sidebar__section">
+          <div className="sidebar__section-title">Store view</div>
+          <select
+            className="sidebar__select"
+            value={config.storeView}
+            onChange={(e) => {
+              const value = e.target.value as StoreView;
+              const mapping = STORE_VIEWS[value];
+              onChange({
+                storeView: value,
+                uploadUrl: mapping?.uploadUrl || config.uploadUrl,
+                shopUrl: mapping?.shopUrl || config.shopUrl,
+                disclaimerText:
+                  mapping?.disclaimerText || config.disclaimerText,
+              });
+            }}
+          >
+            {Object.keys(STORE_VIEWS).map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="sidebar__section">
           <div className="sidebar__section-title">Layout</div>
           <div className="sidebar__checkbox-list">

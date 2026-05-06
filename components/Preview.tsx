@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Config, Section } from "../types.ts";
+import { Config, Section, STORE_VIEWS } from "../types.ts";
 import "./Preview.css";
 import { X, Check, Link2, Link as LinkIcon, Link2Off } from "lucide-react";
 
@@ -14,13 +14,15 @@ interface PreviewProps {
 const Toolbar: React.FC<{
   section: Section;
   onUpdate: (updates: Partial<Section>) => void;
-
   onRemove: () => void;
 }> = ({ section, onUpdate, onRemove }) => {
   const changeType = (
+    e: React.MouseEvent,
     newType: Section["type"],
     showButton: boolean = false,
   ) => {
+    e.preventDefault();
+    e.stopPropagation();
     onUpdate({
       type: newType,
       showButton,
@@ -28,10 +30,10 @@ const Toolbar: React.FC<{
   };
 
   return (
-    <div className="toolbar-v4" onClick={(e) => e.stopPropagation()}>
+    <div className="toolbar-v4" onMouseDown={(e) => e.stopPropagation()}>
       <div className="toolbar-v4__actions">
         <button
-          onClick={() => changeType("h1")}
+          onMouseDown={(e) => changeType(e, "h1")}
           className={`toolbar-v4__btn ${section.type === "h1" ? "active" : ""}`}
         >
           <svg
@@ -48,7 +50,7 @@ const Toolbar: React.FC<{
           </svg>
         </button>
         <button
-          onClick={() => changeType("h2")}
+          onMouseDown={(e) => changeType(e, "h2")}
           className={`toolbar-v4__btn ${section.type === "h2" ? "active" : ""}`}
         >
           <svg
@@ -65,7 +67,7 @@ const Toolbar: React.FC<{
           </svg>
         </button>
         <button
-          onClick={() => changeType("p")}
+          onMouseDown={(e) => changeType(e, "p")}
           className={`toolbar-v4__btn ${section.type === "p" ? "active" : ""}`}
         >
           <svg
@@ -82,7 +84,7 @@ const Toolbar: React.FC<{
           </svg>
         </button>
         <button
-          onClick={() => changeType("callout", false)}
+          onMouseDown={(e) => changeType(e, "callout", false)}
           className={`toolbar-v4__btn ${section.type === "callout" && !section.showButton ? "active" : ""}`}
         >
           <svg
@@ -99,7 +101,7 @@ const Toolbar: React.FC<{
           </svg>
         </button>
         <button
-          onClick={() => changeType("callout", true)}
+          onMouseDown={(e) => changeType(e, "callout", true)}
           className={`toolbar-v4__btn ${section.type === "callout" && section.showButton ? "active" : ""}`}
         >
           <svg
@@ -116,7 +118,7 @@ const Toolbar: React.FC<{
           </svg>
         </button>
         <button
-          onClick={() => changeType("divider")}
+          onMouseDown={(e) => changeType(e, "divider")}
           className={`toolbar-v4__btn ${section.type === "divider" ? "active" : ""}`}
         >
           <svg
@@ -135,7 +137,8 @@ const Toolbar: React.FC<{
 
         <div className="toolbar-v4__divider" />
         <button
-          onClick={(e) => {
+          onMouseDown={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onRemove();
           }}
@@ -328,7 +331,8 @@ const SectionItem: React.FC<{
                   <button
                     // 3. This button is the trigger. You must click it to see the input.
                     className={`v4-callout-link-toggle ${section.url ? "active" : ""}`}
-                    onClick={(e) => {
+                    onMouseDown={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       setShowUrlInput(true);
                     }}
@@ -428,7 +432,7 @@ export const Preview: React.FC<PreviewProps> = ({
 
     if (activeSectionId) {
       const activeEl = document.querySelector(
-        ".section-item-v4.active .v4-editor",
+        ".section-item-v4.active-section .v4-editor",
       );
       if (activeEl)
         onUpdateSection(activeSectionId, { text: activeEl.innerHTML });
@@ -555,7 +559,7 @@ export const Preview: React.FC<PreviewProps> = ({
 
   return (
     <div
-      className="v4-preview-pane"
+      className={`${config.storeView === "GlassesUSA" ? "store-glassesusa" : "store-zenni"} v4-preview-pane`}
       ref={previewContainerRef}
       onClick={() => setActiveSectionId(null)}
     >
@@ -611,11 +615,11 @@ export const Preview: React.FC<PreviewProps> = ({
 
       {config.showLogo && (
         <div className="v4-logo-header">
-          <a href="https://www.glassesusa.com" target="_black">
+          <a href={STORE_VIEWS[config.storeView].shopUrl} target="_blank">
             <img
               className="desktop-version-logo"
-              src="https://optimaxweb.glassesusa.com/image/upload/v1770291950/media/wysiwyg/glasseslogemail.png"
-              alt="GlassesUSA"
+              src={STORE_VIEWS[config.storeView].logoSrc}
+              alt={STORE_VIEWS[config.storeView].logoAlt}
             />
           </a>
         </div>
@@ -694,191 +698,14 @@ export const Preview: React.FC<PreviewProps> = ({
       </div>
 
       {config.showFooter && (
-        <table
-          className="v4-footer-table"
-          width="100%"
-          cellPadding="0"
-          cellSpacing="0"
-          style={{
-            background: "#020621",
-            color: "#fff",
-            textAlign: "center",
-            margin: "auto",
+        <div
+          dangerouslySetInnerHTML={{
+            __html: (() => {
+              let footerHtml = STORE_VIEWS[config.storeView].footerHtml;
+              return footerHtml;
+            })(),
           }}
-        >
-          <tbody>
-            <tr>
-              <td height="24"></td>
-            </tr>
-            <tr
-              className="trans-txt-d-b"
-              style={{
-                fontStyle: "normal",
-                fontWeight: "normal",
-                lineHeight: "28px",
-              }}
-            >
-              <td>
-                <b className="trans-txt-d-inline" style={{ display: "block" }}>
-                  Need help with your order?
-                </b>
-                &nbsp;
-                <span
-                  className="trans-txt-d-normal"
-                  style={{ fontSize: "18px" }}
-                >
-                  We are here for you 24/7!
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td className="trans-txt-d-b-top" height="24"></td>
-            </tr>
-            <tr style={{ display: "table", margin: "auto" }}>
-              <td>
-                <a href="https://www.glassesusa.com/">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/chat-cta.png"
-                    className="colored"
-                    style={{ display: "none" }}
-                    alt="chat"
-                  />
-                </a>
-              </td>
-              <td width="8"></td>
-              <td>
-                <a href="tel:+1-844-244-1186">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/call-cta.png"
-                    className="colored"
-                    style={{ display: "none" }}
-                    alt="call us"
-                  />
-                </a>
-              </td>
-              <td width="8"></td>
-              <td>
-                <a href="https://www.glassesusa.com/help-center">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/help-cta.png"
-                    className="colored"
-                    style={{ display: "none" }}
-                    alt="help center"
-                  />
-                </a>
-              </td>
-            </tr>
-            <tr style={{ display: "table", margin: "auto" }}>
-              <td>
-                <a href="https://www.glassesusa.com/">
-                  <img
-                    className="logomobile"
-                    width="108"
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/lc-n.png"
-                    alt="chat"
-                  />
-                </a>
-              </td>
-              <td width="8"></td>
-              <td>
-                <a href="tel:+1-844-244-1186">
-                  <img
-                    className="logomobile"
-                    width="108"
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/cu-n.png"
-                    alt="call us"
-                  />
-                </a>
-              </td>
-              <td width="8"></td>
-              <td>
-                <a href="https://www.glassesusa.com/help-center">
-                  <img
-                    className="logomobile"
-                    width="108"
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/hp21/hc-n.png"
-                    alt="help center"
-                  />
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td height="38"></td>
-            </tr>
-            <tr style={{ display: "table", margin: "auto" }}>
-              <td>
-                <a href="https://www.facebook.com/GlassesUSA/">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/facebook.png"
-                    alt="facebook"
-                  />
-                </a>
-              </td>
-              <td width="36"></td>
-              <td>
-                <a href="https://www.instagram.com/glassesusa/">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/instagram.png"
-                    alt="instagram"
-                  />
-                </a>
-              </td>
-              <td width="36"></td>
-              <td>
-                <a href="https://twitter.com/GlassesUSA">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/tiktok.png"
-                    alt="tiktok"
-                  />
-                </a>
-              </td>
-              <td width="36"></td>
-              <td>
-                <a href="https://twitter.com/GlassesUSA">
-                  <img
-                    style={{ verticalAlign: "top" }}
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp26/x.png"
-                    alt="X"
-                  />
-                </a>
-              </td>
-              <td width="36"></td>
-              <td>
-                <a href="https://www.youtube.com/user/GlassesUSA">
-                  <img
-                    style={{ verticalAlign: "top" }}
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/youtube.png"
-                    alt="youtube"
-                  />
-                </a>
-              </td>
-              <td width="36"></td>
-              <td>
-                <a href="https://www.pinterest.com/glassesusa/">
-                  <img
-                    src="https://optimaxweb.glassesusa.com/image/upload/f_auto,q_auto/media/wysiwyg/lp21/pinterest.png"
-                    alt="pinterest"
-                  />
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td height="24"></td>
-            </tr>
-
-            <tr>
-              <td
-                className="v4-footer-copy-td"
-                style={{ fontSize: "12px", color: "#B0BDC5" }}
-              >
-                © 2006-2026 Glassesusa.com All Rights Reserved
-              </td>
-            </tr>
-            <tr>
-              <td height="24"></td>
-            </tr>
-          </tbody>
-        </table>
+        />
       )}
     </div>
   );
