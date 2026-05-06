@@ -97,8 +97,8 @@ export const STORE_VIEWS: Record<StoreView, StoreConfig> = {
                 </td>
             </tr>
     `,
-    textColor: 'red',
-    calloutBorderColor: '#da2727',
+    textColor: '#0F0F0F',
+    calloutBorderColor: '#277BDA',
     buttonBgColor: '#020621',
     buttonTextColor: '#ffffff'
   },
