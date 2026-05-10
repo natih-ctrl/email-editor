@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Config, Section, StoreView, STORE_VIEWS } from "../types.ts";
 import "./Sidebar.css";
 
@@ -21,6 +21,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onImport,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
+  const [storeMenuOpen, setStoreMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
+        setStoreMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleStoreViewChange = (value: StoreView) => {
+    const mapping = STORE_VIEWS[value];
+    onChange({
+      storeView: value,
+      uploadUrl: mapping?.uploadUrl || config.uploadUrl,
+      shopUrl: mapping?.shopUrl || config.shopUrl,
+      disclaimerText: mapping?.disclaimerText || config.disclaimerText,
+    });
+    setStoreMenuOpen(false);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,27 +128,47 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="sidebar__content">
         <div className="sidebar__section">
           <div className="sidebar__section-title">Store view</div>
-          <select
-            className="sidebar__select"
-            value={config.storeView}
-            onChange={(e) => {
-              const value = e.target.value as StoreView;
-              const mapping = STORE_VIEWS[value];
-              onChange({
-                storeView: value,
-                uploadUrl: mapping?.uploadUrl || config.uploadUrl,
-                shopUrl: mapping?.shopUrl || config.shopUrl,
-                disclaimerText:
-                  mapping?.disclaimerText || config.disclaimerText,
-              });
-            }}
-          >
-            {Object.keys(STORE_VIEWS).map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="sidebar__select-wrapper" ref={selectRef}>
+            <button
+              type="button"
+              className="sidebar__select"
+              onClick={() => setStoreMenuOpen((prev) => !prev)}
+            >
+              <span>{config.storeView}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="11"
+                height="7"
+                viewBox="0 0 11 7"
+                fill="none"
+                className={`sidebar__select-icon ${storeMenuOpen ? "open" : ""}`}
+              >
+                <path
+                  d="M0.75 0.75L5.25 5.75L9.75 0.75"
+                  stroke="#B4B4B4"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <div
+              className={`sidebar__select-menu ${storeMenuOpen ? "open" : ""}`}
+            >
+              {Object.keys(STORE_VIEWS).map((name) => (
+                <button
+                  type="button"
+                  key={name}
+                  className={`sidebar__select-option ${
+                    config.storeView === name ? "selected" : ""
+                  }`}
+                  onClick={() => handleStoreViewChange(name as StoreView)}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="sidebar__section">

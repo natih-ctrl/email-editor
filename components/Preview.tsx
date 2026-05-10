@@ -557,9 +557,22 @@ export const Preview: React.FC<PreviewProps> = ({
     setUrlValue("https://");
   };
 
+  const getStoreClass = (storeView: string) => {
+    switch (storeView) {
+      case "GlassesUSA":
+        return "store-glassesusa";
+      case "UHC":
+        return "store-UHC";
+      case "UVP":
+        return "store-UVP";
+      default:
+        return "store-ottica";
+    }
+  };
+
   return (
     <div
-      className={`${config.storeView === "GlassesUSA" ? "store-glassesusa" : "store-zenni"} v4-preview-pane`}
+      className={`${getStoreClass(config.storeView)} v4-preview-pane`}
       ref={previewContainerRef}
       onClick={() => setActiveSectionId(null)}
     >

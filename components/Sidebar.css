@@ -1,14 +1,13 @@
 .sidebar {
   width: 380px;
   border-right: 1px solid rgba(19, 88, 167, 0.12);
-  background: #F4FAFE;
+  background: #f4fafe;
   flex-direction: column;
   padding: 40px 28px 28px;
   z-index: 10;
   flex-shrink: 0;
   height: 100vh;
 }
-
 
 .sidebar__icon-box {
   width: 68px;
@@ -17,7 +16,7 @@
 }
 
 .sidebar__title {
-  color: #1358A7;
+  color: #1358a7;
   width: 340px;
   font-size: 28px;
   font-style: normal;
@@ -42,7 +41,7 @@
   font-style: normal;
   font-weight: 700;
   line-height: 30px;
-  color: #0F0F0F;
+  color: #0f0f0f;
   margin-bottom: 16px;
 }
 
@@ -73,8 +72,8 @@
 }
 
 .sidebar__checkbox-custom.checked {
-  background: #277BDA;
-  border-color: #277BDA;
+  background: #277bda;
+  border-color: #277bda;
 }
 
 .sidebar__checkbox-tick {
@@ -86,7 +85,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
-  color: #0F0F0F;
+  color: #0f0f0f;
 }
 
 .sidebar__actions {
@@ -96,7 +95,6 @@
 }
 
 .btn {
-
   height: 48px;
   border-radius: 6px;
   display: flex;
@@ -105,23 +103,111 @@
   gap: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  background-color: #F4FAFE;
-  color: #277BDA;
+  background-color: #f4fafe;
+  color: #277bda;
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
   line-height: 20px;
   border-radius: 8px;
-  border: 2px solid #277BDA;
+  border: 2px solid #277bda;
 }
 
-
-
-
-
 .btn:first-child {
-  border: 2px solid #277BDA;
-  background: linear-gradient(270deg, #277BDA 0%, #196AC6 100%);
+  border: 2px solid #277bda;
+  background: linear-gradient(270deg, #277bda 0%, #196ac6 100%);
+  color: #fff;
+}
 
-  color: #FFF;
+.sidebar__select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.sidebar__select {
+  width: 100%;
+  height: 48px;
+  padding: 0 18px;
+  border: 1px solid #dedede;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #5b6971;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+}
+
+.sidebar__select:focus {
+  outline: none;
+  border-color: #277bda;
+  box-shadow: 0 0 0 4px rgba(39, 123, 218, 0.14);
+}
+
+.sidebar__select-icon {
+  transition: transform 0.2s ease;
+}
+
+.sidebar__select-icon.open {
+  transform: rotate(180deg);
+}
+
+.sidebar__select-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #dedede;
+  box-shadow: 0 18px 48px rgba(20, 64, 96, 0.12);
+  padding: 8px 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  z-index: 20;
+}
+
+.sidebar__select-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sidebar__select-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #0f0f0f;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  padding: 12px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar__select-option:hover {
+  background: #eef4ff;
+}
+
+.sidebar__select-option.selected {
+  color: #1358a7;
+  font-weight: 700;
+}
+
+.sidebar__select-option:focus {
+  outline: none;
 }
