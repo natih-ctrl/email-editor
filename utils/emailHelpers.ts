@@ -2,7 +2,7 @@ import { Config, Section, STORE_VIEWS, DEFAULT_CONFIG } from "../types";
 
 export const generateHTML = (config: Config): string => {
   const store = STORE_VIEWS[config.storeView];
-  
+
   const sectionsHTML = config.sections
     .map((section) => {
       switch (section.type) {
@@ -25,10 +25,33 @@ export const generateHTML = (config: Config): string => {
                   <div style="font-size: 16px; font-weight: 400; line-height: 24px; color: ${store.textColor};">
                     ${section.text || ""}
                   </div>
-                  ${section.showButton ? `
+                  ${
+                    section.showButton
+                      ? `
                   <div style="padding-top: 16px;">
                     <a href="${section.url || "#"}" style="background-color: ${store.buttonBgColor}; color: ${store.buttonTextColor}; padding: 0px 20px;height:32px; line-height:32px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">${section.buttonText || "Upload Now"}</a>
-                  </div>` : ""}
+                  </div>`
+                      : ""
+                  }
+                </td>
+              </tr>
+            </table>
+          </td></tr>`;
+        case "examlink":
+          return `
+          {% if exam %}
+          <tr><td style="padding: 0 20px 16px 20px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; background-color: #ffffff; border-collapse: separate;">
+              <tr>
+                <td width="4" style="background-color: ${store.calloutBorderColor}; border-radius: 4px 0 0 4px; font-size: 0; line-height: 0;">&nbsp;</td>
+                <td style="padding: 16px;">
+                  <div style="font-size: 16px; font-weight: 400; line-height: 24px; color: ${store.textColor};">
+                    ${section.text || ""}
+                  </div>
+                  <div style="padding-top: 16px;">
+                    <a href={{ exam.link }} style="background-color: ${store.buttonBgColor}; color: ${store.buttonTextColor}; padding: 0px 20px;height:32px; line-height:32px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">Start Test  </a>
+                  </div>
+                  {% endif %}
                 </td>
               </tr>
             </table>
@@ -36,7 +59,8 @@ export const generateHTML = (config: Config): string => {
         default:
           return "";
       }
-    }).join("");
+    })
+    .join("");
 
   return `<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -61,7 +85,9 @@ export const generateHTML = (config: Config): string => {
     </style>
 </head>
 <body style="background: #FBFBFB; margin:auto; max-width:600px; font-family: Helvetica, Roboto, sans-serif; margin-top:40px; font-size: 16px;">
-    ${config.showLogo ? `<table border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
+    ${
+      config.showLogo
+        ? `<table border="0" cellpadding="0" cellspacing="0" align="center" style="padding: 0px 20px 0px 20px;display: block;">
         <tbody>
             <tr><td height="40"></td></tr>
             <tr>
@@ -73,20 +99,28 @@ export const generateHTML = (config: Config): string => {
             </tr>
             <tr><td class="desktop-version-width-height" height="32"></td></tr>
         </tbody>
-    </table>` : ""}
+    </table>`
+        : ""
+    }
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
         <tbody>
 ${sectionsHTML}
-            ${config.showSignature ? `
+            ${
+              config.showSignature
+                ? `
             <tr>
                 <td style="padding: 16px 20px 32px 20px; font-family: Roboto, sans-serif;">
                     <p style="margin: 0; font-size: 16px; color: ${store.textColor}; font-weight: 400;">${config.signatureBest}</p>
                     <p style="margin: 0; font-size: 16px; color: ${store.textColor}; font-weight: 400;">${config.signatureName}</p>
                 </td>
-            </tr>` : ""}
+            </tr>`
+                : ""
+            }
 
-            ${config.showDisclaimer ? `
+            ${
+              config.showDisclaimer
+                ? `
             <tr>
                 <td style="padding: 0 20px 0 20px;">
                     <div style="height: 1px; background-color: #DEDEDE;"></div>
@@ -96,8 +130,10 @@ ${sectionsHTML}
                 <td style="padding: 32px 20px 0 20px; font-size: 12px; color: #3A4850; line-height: 18px; font-family: Roboto, sans-serif;">
                     ${config.disclaimerText}
                 </td>
-            </tr>` : ""}
-            
+            </tr>`
+                : ""
+            }
+
             <tr><td height="40"></td></tr>
 
             ${config.showFooter ? `${store.footerHtml}` : ""}
@@ -105,6 +141,15 @@ ${sectionsHTML}
     </table>
 </body>
 </html>`;
+};
+
+const isExamLinkTemplate = (rawHtml: string, button: Element | null) => {
+  const hasExamLinkMarker = /\{\%\s*if\s+exam\s*\%\}|exam\.link/i.test(rawHtml);
+  const isStartTestButton =
+    (button?.textContent || "").replace(/\s+/g, " ").trim().toLowerCase() ===
+    "start test";
+
+  return hasExamLinkMarker && isStartTestButton;
 };
 
 export const parseImportedEmail = (html: string): Partial<Config> => {
@@ -116,10 +161,15 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
   let importedSigName = DEFAULT_CONFIG.signatureName;
   let importedDisclaimer = DEFAULT_CONFIG.disclaimerText;
 
-  let hasLogo = !!doc.querySelector("img.desktop-version-logo") || html.includes("gusalogo.png");
+  let hasLogo =
+    !!doc.querySelector("img.desktop-version-logo") ||
+    html.includes("gusalogo.png");
   let hasSignature = false;
   let hasDisclaimer = false;
-  let hasFooter = !!doc.querySelector(".v4-footer-table") || !!doc.querySelector(".trans-txt-d-bc") || html.includes("Need help with your order?");
+  let hasFooter =
+    !!doc.querySelector(".v4-footer-table") ||
+    !!doc.querySelector(".trans-txt-d-bc") ||
+    html.includes("Need help with your order?");
 
   const rows = Array.from(doc.querySelectorAll("tr"));
   const footerStartIndex = rows.findIndex(
@@ -144,9 +194,18 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
     }
 
     const div = td.querySelector("div");
-    if (div && !td.querySelector("p") && !td.querySelector("h1") && !td.querySelector("h2")) {
+    if (
+      div &&
+      !td.querySelector("p") &&
+      !td.querySelector("h1") &&
+      !td.querySelector("h2")
+    ) {
       const divStyle = div.getAttribute("style") || "";
-      if (divStyle.includes("background-color") || divStyle.includes("border") || divStyle.includes("height: 1px")) {
+      if (
+        divStyle.includes("background-color") ||
+        divStyle.includes("border") ||
+        divStyle.includes("height: 1px")
+      ) {
         if (!textContent || textContent.length < 5) {
           sections.push({
             id: Math.random().toString(36).substr(2, 9),
@@ -160,7 +219,9 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
 
     const nestedTable = td.querySelector("table");
     if (nestedTable) {
-      const borderCell = nestedTable.querySelector('td[width="4"]') as HTMLElement | null;
+      const borderCell = nestedTable.querySelector(
+        'td[width="4"]',
+      ) as HTMLElement | null;
       const bcStyle = borderCell?.getAttribute("style") || "";
       const isBlue = bcStyle.includes("#277BDA");
 
@@ -182,9 +243,11 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
         });
 
         if (contentText) {
+          const isExamLink = isExamLinkTemplate(html, button);
+
           sections.push({
             id: Math.random().toString(36).substr(2, 9),
-            type: "callout",
+            type: isExamLink ? "examlink" : "callout",
             text: contentText,
             showButton: !!button,
             buttonText: button?.textContent || "Upload Now",
@@ -200,7 +263,12 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
       const p1Text = ps[0].innerHTML;
       const p2Text = ps[1].innerHTML;
 
-      if (p1Text.length > 0 && p1Text.length < 30 && p2Text.length > 0 && p2Text.length < 100) {
+      if (
+        p1Text.length > 0 &&
+        p1Text.length < 30 &&
+        p2Text.length > 0 &&
+        p2Text.length < 100
+      ) {
         const allText = td.textContent || "";
         if (allText.includes("Best") || allText.includes("Regards")) {
           importedSigBest = p1Text;
@@ -211,7 +279,10 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
       }
     }
 
-    if (style.includes("font-size: 12px") || style.includes("font-size: 11px")) {
+    if (
+      style.includes("font-size: 12px") ||
+      style.includes("font-size: 11px")
+    ) {
       if (innerHTML.length > 100) {
         importedDisclaimer = innerHTML;
         hasDisclaimer = true;
@@ -226,7 +297,11 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
     if (h1) {
       const h1Text = h1.innerHTML;
       if (h1Text && h1Text.length > 0) {
-        sections.push({ id: Math.random().toString(36).substr(2, 9), type: "h1", text: h1Text });
+        sections.push({
+          id: Math.random().toString(36).substr(2, 9),
+          type: "h1",
+          text: h1Text,
+        });
         return;
       }
     }
@@ -234,7 +309,11 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
     if (h2) {
       const h2Text = h2.innerHTML;
       if (h2Text && h2Text.length > 0) {
-        sections.push({ id: Math.random().toString(36).substr(2, 9), type: "h2", text: h2Text });
+        sections.push({
+          id: Math.random().toString(36).substr(2, 9),
+          type: "h2",
+          text: h2Text,
+        });
         return;
       }
     }
@@ -245,7 +324,11 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
       let allText = "";
 
       if (divs.length > 0) {
-        const textBeforeDiv = pText.split(/<div[^>]*>/)[0].replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, "").trim();
+        const textBeforeDiv = pText
+          .split(/<div[^>]*>/)[0]
+          .replace(/<br\s*\/?>/gi, " ")
+          .replace(/<[^>]+>/g, "")
+          .trim();
         if (textBeforeDiv.length > 0) allText += textBeforeDiv;
 
         divs.forEach((div) => {
@@ -260,14 +343,28 @@ export const parseImportedEmail = (html: string): Partial<Config> => {
       }
 
       if (allText && allText.length > 3) {
-        sections.push({ id: Math.random().toString(36).substr(2, 9), type: "p", text: allText });
+        sections.push({
+          id: Math.random().toString(36).substr(2, 9),
+          type: "p",
+          text: allText,
+        });
         return;
       }
     }
 
-    if (textContent && textContent.length > 0 && !textContent.includes("<table") && !hasSignature && !hasDisclaimer) {
+    if (
+      textContent &&
+      textContent.length > 0 &&
+      !textContent.includes("<table") &&
+      !hasSignature &&
+      !hasDisclaimer
+    ) {
       if (textContent.length > 3) {
-        sections.push({ id: Math.random().toString(36).substr(2, 9), type: "p", text: textContent });
+        sections.push({
+          id: Math.random().toString(36).substr(2, 9),
+          type: "p",
+          text: textContent,
+        });
       }
     }
   });

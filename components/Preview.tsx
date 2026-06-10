@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Config, Section, STORE_VIEWS } from "../types.ts";
 import "./Preview.css";
 import { X, Check, Link2, Link as LinkIcon, Link2Off } from "lucide-react";
+import { config } from "process";
 
 interface PreviewProps {
   config: Config;
@@ -13,9 +14,10 @@ interface PreviewProps {
 
 const Toolbar: React.FC<{
   section: Section;
+  config: Config;
   onUpdate: (updates: Partial<Section>) => void;
   onRemove: () => void;
-}> = ({ section, onUpdate, onRemove }) => {
+}> = ({ section, config, onUpdate, onRemove }) => {
   const changeType = (
     e: React.MouseEvent,
     newType: Section["type"],
@@ -134,7 +136,28 @@ const Toolbar: React.FC<{
             />
           </svg>
         </button>
-
+        {/* new button */}
+        {config.storeView === "GlassesUSA" ? (
+          <button
+            onMouseDown={(e) => changeType(e, "examlink", true)}
+            className={`toolbar-v4__btn ${section.type === "examlink" && section.showButton ? "active" : ""}`}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4.54545 20H1.81818C1.31818 20 0.890152 19.822 0.534091 19.4659C0.17803 19.1098 0 18.6818 0 18.1818V15.4545H1.81818V18.1818H4.54545V20ZM15.4545 20V18.1818H18.1818V15.4545H20V18.1818C20 18.6818 19.822 19.1098 19.4659 19.4659C19.1098 19.822 18.6818 20 18.1818 20H15.4545ZM10 15.9091C8.18182 15.9091 6.53409 15.3712 5.05682 14.2955C3.57955 13.2197 2.5 11.7879 1.81818 10C2.5 8.21212 3.57955 6.7803 5.05682 5.70455C6.53409 4.62879 8.18182 4.09091 10 4.09091C11.8182 4.09091 13.4659 4.62879 14.9432 5.70455C16.4205 6.7803 17.5 8.21212 18.1818 10C17.5 11.7879 16.4205 13.2197 14.9432 14.2955C13.4659 15.3712 11.8182 15.9091 10 15.9091ZM10 14.0909C11.3333 14.0909 12.553 13.7273 13.6591 13C14.7652 12.2727 15.6136 11.2727 16.2045 10C15.6136 8.72727 14.7652 7.72727 13.6591 7C12.553 6.27273 11.3333 5.90909 10 5.90909C8.66667 5.90909 7.44697 6.27273 6.34091 7C5.23485 7.72727 4.38636 8.72727 3.79545 10C4.38636 11.2727 5.23485 12.2727 6.34091 13C7.44697 13.7273 8.66667 14.0909 10 14.0909ZM10 13.1818C10.8788 13.1818 11.6288 12.8712 12.25 12.25C12.8712 11.6288 13.1818 10.8788 13.1818 10C13.1818 9.12121 12.8712 8.37121 12.25 7.75C11.6288 7.12879 10.8788 6.81818 10 6.81818C9.12121 6.81818 8.37121 7.12879 7.75 7.75C7.12879 8.37121 6.81818 9.12121 6.81818 10C6.81818 10.8788 7.12879 11.6288 7.75 12.25C8.37121 12.8712 9.12121 13.1818 10 13.1818ZM10 11.3636C9.62121 11.3636 9.29924 11.2311 9.03409 10.9659C8.76894 10.7008 8.63636 10.3788 8.63636 10C8.63636 9.62121 8.76894 9.29924 9.03409 9.03409C9.29924 8.76894 9.62121 8.63636 10 8.63636C10.3788 8.63636 10.7008 8.76894 10.9659 9.03409C11.2311 9.29924 11.3636 9.62121 11.3636 10C11.3636 10.3788 11.2311 10.7008 10.9659 10.9659C10.7008 11.2311 10.3788 11.3636 10 11.3636ZM0 4.54545V1.81818C0 1.31818 0.17803 0.890152 0.534091 0.534091C0.890152 0.17803 1.31818 0 1.81818 0H4.54545V1.81818H1.81818V4.54545H0ZM18.1818 4.54545V1.81818H15.4545V0H18.1818C18.6818 0 19.1098 0.17803 19.4659 0.534091C19.822 0.890152 20 1.31818 20 1.81818V4.54545H18.1818Z"
+                fill="#1F1F1F"
+              />
+            </svg>
+          </button>
+        ) : (
+          ""
+        )}
         <div className="toolbar-v4__divider" />
         <button
           onMouseDown={(e) => {
@@ -165,13 +188,23 @@ const Toolbar: React.FC<{
 
 const SectionItem: React.FC<{
   section: Section;
+  config: Config;
   index: number;
   isActive: boolean;
   onSetActive: (id: string | null) => void;
   onUpdate: (id: string, updates: Partial<Section>) => void;
   onAdd: (index: number) => void;
   onRemove: (id: string) => void;
-}> = ({ section, index, isActive, onSetActive, onUpdate, onAdd, onRemove }) => {
+}> = ({
+  section,
+  config,
+  index,
+  isActive,
+  onSetActive,
+  onUpdate,
+  onAdd,
+  onRemove,
+}) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const btnTextRef = useRef<HTMLDivElement>(null);
 
@@ -259,6 +292,7 @@ const SectionItem: React.FC<{
       {isActive && (
         <Toolbar
           section={section}
+          config={config}
           onUpdate={(u) => onUpdate(section.id, u)}
           onRemove={() => onRemove(section.id)}
         />
@@ -342,6 +376,26 @@ const SectionItem: React.FC<{
                 )}
               </div>
             )}
+          </div>
+        </div>
+      ) : // exam link type
+      section.type === "examlink" && config.storeView === "GlassesUSA" ? (
+        <div className="v4-callout-card" key={`callout-${section.id}`}>
+          <div className="v4-callout-border" />
+          <div className="v4-callout-content">
+            <div
+              key={`editor-${section.id}-${section.type}`}
+              ref={contentRef}
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={handleBlur}
+              onPaste={handlePastePlain}
+              className="v4-editor v4-callout-text"
+              data-placeholder={getPlaceholder()}
+            />
+            <div className="v4-examlink-wrap">
+              <div className="v4-callout-btn">Start Test</div>
+            </div>
           </div>
         </div>
       ) : (
@@ -646,6 +700,7 @@ export const Preview: React.FC<PreviewProps> = ({
             idx > 0 ? (
               <SectionItem
                 key={section.id}
+                config={config}
                 section={section}
                 index={idx}
                 isActive={activeSectionId === section.id}

@@ -1,4 +1,10 @@
-export type SectionType = "h1" | "h2" | "p" | "callout" | "divider";
+export type SectionType =
+  | "h1"
+  | "h2"
+  | "p"
+  | "callout"
+  | "divider"
+  | "examlink";
 
 // supported store views
 export type StoreView = "GlassesUSA" | "Ottica" | "UHC" | "UVP";

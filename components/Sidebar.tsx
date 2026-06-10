@@ -146,9 +146,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <path
                   d="M0.75 0.75L5.25 5.75L9.75 0.75"
                   stroke="#B4B4B4"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </button>

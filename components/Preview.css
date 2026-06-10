@@ -104,7 +104,8 @@
   min-height: auto;
 }
 
-.v4-callout-actions-row {
+.v4-callout-actions-row,
+.v4-examlink-wrap {
   display: flex;
   align-items: center;
   gap: 12px;
