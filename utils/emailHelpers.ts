@@ -48,13 +48,18 @@ export const generateHTML = (config: Config): string => {
           <div style="font-size: 16px; font-weight: 400; line-height: 24px; color: ${store.textColor};">
           ${section.text || ""}
           </div>
-                  <div style="padding-top: 16px;">
-                    <a href={{ exam.link }} style="background-color: ${store.buttonBgColor}; color: ${store.buttonTextColor}; padding: 0px 20px;height:32px; line-height:32px; text-align: center; border-radius: 20px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block;">Start Test  </a>
-                  </div>
-                  </td>
-                  </tr>
-                  </table>
-                  {% endif %}
+                <div style="padding-top: 16px;">
+                <a href="{{ exam.link }}"
+                           style="background-color: #020621; color: #ffffff; padding: 0px 20px; height:32px;
+                              line-height:32px; text-align: center; border-radius: 20px; font-size: 14px;
+                              font-weight: 700; text-decoration: none; display: inline-block;">
+                            Start Test
+                        </a>
+                        </div>
+                        </td>
+                        </tr>
+                        </table>
+                        {% endif %}
           </td></tr>`;
         default:
           return "";
