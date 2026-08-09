@@ -59,7 +59,7 @@ export const generateHTML = (config: Config): string => {
                         </td>
                         </tr>
                         </table>
-                        {% endif %}
+                        {% endunless %}
           </td></tr>`;
         default:
           return "";
