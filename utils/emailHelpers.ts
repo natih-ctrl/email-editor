@@ -53,7 +53,7 @@ export const generateHTML = (config: Config): string => {
                            style="background-color: #020621; color: #ffffff; padding: 0px 20px; height:32px;
                               line-height:32px; text-align: center; border-radius: 20px; font-size: 14px;
                               font-weight: 700; text-decoration: none; display: inline-block;">
-                            Start Test!!!!!
+                            Start Test
                         </a>
                         </div>
                         </td>
