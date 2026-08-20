@@ -394,7 +394,7 @@ const SectionItem: React.FC<{
               data-placeholder={getPlaceholder()}
             />
             <div className="v4-examlink-wrap">
-              <div className="v4-callout-btn">Start Test</div>
+              <div className="v4-callout-btn">Start Test!</div>
             </div>
           </div>
         </div>
